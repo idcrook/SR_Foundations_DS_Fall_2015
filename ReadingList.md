@@ -16,9 +16,24 @@ more specific topics on R
 - [ ] http://adv-r.had.co.nz "Advanced R" by Hadley Wickham
 - http://moderndata.plot.ly/interactive-r-visualizations-with-d3-ggplot2-rstudio/
 - http://www.dummies.com/how-to/computers-software/programming/R.html
+- http://www.computerworld.com/article/2497464/business-intelligence/business-intelligence-60-r-resources-to-improve-your-data-skills.html#rgraphcook
+- http://www.ling.upenn.edu/%7Ejoseff/rstudy/week4.html#rgb
+- https://www.udacity.com/wiki/ud651
 
 # Data science blogs or websites
 
 - http://www.kdnuggets.com
 - http://www.dataschool.io
 - http://www.datasciencecentral.com
+- https://www.quandl.com/search?type=all
+
+## Other tools
+
+- [D3.js](http://d3js.org)
+
+# Data sources
+
+- [UC Irvine Machine Learning Repository](http://archive.ics.uci.edu/ml/index.html)
+- [Quandl](https://www.quandl.com)
+- http://plants.usda.gov/adv_search.html
+- [kaggle](https://www.kaggle.com)
