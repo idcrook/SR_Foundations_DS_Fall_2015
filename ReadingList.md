@@ -9,6 +9,13 @@
 - [ ] Doing Data Science: Straight Talk from the Frontline (O'Reilly)
 - [ ] "Big Data: Understanding How Data Powers Big Business." Bill Schmarzo.
 
+## Other Books
+
+- [x] [The Visual Display of Quantitative Information](http://www.edwardtufte.com/tufte/books_vdqi)
+- [ ] [Envisioning Information](http://www.edwardtufte.com/tufte/books_ei)
+- [ ] [Visual Explanations](http://www.edwardtufte.com/tufte/books_visex)
+
+
 ## R-language-related books / papers / site
 
 more specific topics on R
