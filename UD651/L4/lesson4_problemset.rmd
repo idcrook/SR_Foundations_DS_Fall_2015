@@ -263,6 +263,30 @@ diamondsByClarity <- diamonds %.%
 ###  Bar Charts of Mean Price
 
 ``` {r Bar Charts of Mean Price}
+# We’ve created summary data frames with the mean price
+# by clarity and color. You can run the code in R to
+# verify what data is in the variables diamonds_mp_by_clarity
+# and diamonds_mp_by_color.
 
+# Your task is to write additional code to create two bar plots
+# on one output image using the grid.arrange() function from the package
+# gridExtra.
+
+data(diamonds)
+library(dplyr)
+
+diamonds_by_clarity <- group_by(diamonds, clarity)
+diamonds_mp_by_clarity <- summarise(diamonds_by_clarity, mean_price = mean(price))
+
+diamonds_by_color <- group_by(diamonds, color)
+diamonds_mp_by_color <- summarise(diamonds_by_color, mean_price = mean(price))
+
+# ENTER YOUR CODE BELOW THIS LINE
+# ===================================================================
+library(gridExtra)
+
+ggplot(data = diamonds_mp_by_clarity,
+       aes(x = clarity)) +
+  geom_bar()
 
 ```
