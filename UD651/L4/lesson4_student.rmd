@@ -275,6 +275,8 @@ Response:
 ### Moira on Correlation
 Notes:
 
+- Highly correlated data (highly-coupled) may not be independent
+
 ***
 
 ### More Caution with Correlation
@@ -283,11 +285,16 @@ Notes:
 ```{r More Caution With Correlation}
 #install.packages('alr3')
 library(alr3)
+data(Mitchell)
+?Mitchell
 ```
 
 Create your plot!
 
 ```{r Temp vs Month}
+names(Mitchell)
+ggplot(aes(x = Month %% 12, y = Temp), data = Mitchell) + 
+  geom_point()
 
 ```
 
@@ -301,6 +308,7 @@ b. What is the actual correlation of the two variables?
 
 ```{r Noisy Scatterplots}
 
+with(Mitchell, cor.test(Month, Temp))
 ```
 
 ***
@@ -309,7 +317,14 @@ b. What is the actual correlation of the two variables?
 Notes:
 
 ```{r Making Sense of Data}
+ggplot(aes(x = Month, y = Temp), data = Mitchell) + 
+  geom_point(aes(x = Mitchell$Month %% 12))
 
+range(Mitchell$Month)
+
+ggplot(aes(x = Month, y = Temp), data = Mitchell) + 
+  geom_point() +
+  scale_x_discrete(breaks = seq(0, 203, 12))
 ```
 
 ***
@@ -318,6 +333,7 @@ Notes:
 
 What do you notice?
 Response:
+banding and periodicity
 
 Watch the solution video and check out the Instructor Notes!
 Notes:
@@ -328,7 +344,10 @@ Notes:
 Notes:
 
 ```{r Understanding Noise: Age to Age Months}
-
+ggplot(aes(x = age, y = friend_count_median), data = pf.fc_by_age) +
+  geom_line()
+head(pf.fc_by_age)
+pf.fc_by_age[17:19, ]
 ```
 
 ***
@@ -336,12 +355,20 @@ Notes:
 ### Age with Months Means
 
 ```{r Age with Months Means}
+pf$age_with_months <- (pf$age + (12 - pf$dob_month) / 12)
 
 ```
 
 Programming Assignment
 ```{r Programming Assignment}
+# DO NOT DELETE THIS NEXT LINE OF CODE
+# ========================================================================
+#pf <- read.delim('/datasets/ud651/pseudo_facebook.tsv')
 
+
+# ENTER YOUR CODE BELOW THIS LINE
+# ========================================================================
+pf$age_with_months <- (pf$age + (12 - pf$dob_month) / 12)
 ```
 
 ***
