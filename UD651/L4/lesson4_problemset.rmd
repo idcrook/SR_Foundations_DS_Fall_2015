@@ -1,0 +1,107 @@
+---
+title: "Udacity 651 PS4"
+output:
+  html_document:
+    toc: true
+    theme: united
+---
+
+Problem set 4
+
+*** 
+
+Getting started
+
+```{r libraries and wd}
+library(ggplot2)
+setwd("~/projects/Classes/FoundationsOfDataScience_sliderule/github/UD651/L4")
+data(diamonds)
+```
+
+*** 
+
+```{r Scatterplot of diamond}
+ggplot(aes(x = x, y = price), data = diamonds) + 
+  geom_jitter(alpha = 1/10)
+```
+
+
+#### What are your observations about the scatterplot of price vs. x?
+Response:
+
+there is a price gap around x = 5, and price is positively correlated with x. 
+there seems to be an exponential relationship of price vs x
+
+
+*** 
+
+
+``` {r relations of price vs x,y,z}
+library(gridExtra)
+p1 = ggplot(aes(x = x, y = price), data = diamonds) + 
+  geom_jitter(alpha = 1/10)
+
+p2 = ggplot(aes(x = y, y = price), data = diamonds) + 
+  geom_jitter(alpha = 1/20)
+
+p3 = ggplot(aes(x = z, y = price), data = diamonds) + 
+  geom_jitter(alpha = 1/20)
+  
+grid.arrange(p1, p2, p3, ncol = 1)
+```
+
+
+``` {r Correlations of price vs x,y,z}
+
+with(diamonds, cor.test(x, price))
+with(diamonds, cor.test(y, price))
+with(diamonds, cor.test(z, price))
+
+```
+
+#### What is the correlation ...
+
+
+#### between price and x?
+Response: 
+
+positive, exponential
+0.88
+
+####  between price and y?
+Response:
+
+positive, exponential
+0.87
+
+####  between price and z?
+Response:
+
+positive, exponential
+0.86
+
+
+***
+
+### price vs. depth
+
+``` {r Scatterplot of price vs depth}
+ggplot(aes(x = depth, y = price), data = diamonds) + 
+  geom_jitter(alpha = 3/10)
+```
+
+#### Overlapping of points
+
+
+``` {r Transparency and scale}
+# Change the code to make the transparency of the
+# points to be 1/100 of what they are now and mark
+# the x-axis every 2 units. 
+
+ggplot(data = diamonds, aes(x = depth, y = price)) + 
+  geom_point(alpha = 1/100) +
+  scale_x_continuous(breaks = seq(0, 80, 2))
+```
+
+
+
