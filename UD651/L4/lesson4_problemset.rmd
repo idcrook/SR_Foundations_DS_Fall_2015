@@ -14,6 +14,7 @@ Getting started
 
 ```{r libraries and wd}
 library(ggplot2)
+library(dplyr)
 setwd("~/projects/Classes/FoundationsOfDataScience_sliderule/github/UD651/L4")
 data(diamonds)
 ```
@@ -90,7 +91,7 @@ ggplot(aes(x = depth, y = price), data = diamonds) +
   geom_jitter(alpha = 3/10)
 ```
 
-#### Overlapping of points
+### Overlapping of points
 
 
 ``` {r Transparency and scale}
@@ -103,5 +104,165 @@ ggplot(data = diamonds, aes(x = depth, y = price)) +
   scale_x_continuous(breaks = seq(0, 80, 2))
 ```
 
+#### Based on the scatterplot of depth vs. price, most diamonds are betweeen what values of depth?
+
+Response:
+lower limit to upper limit
+
+59  to 65
+59  to 64  ACCEPTED
+
+``` {r correlation of depth vs price}
+with(diamonds, cor.test(depth, price))
+```
+
+#### What is the correlation of depth vs. price
+
+Response:
+
+-0.010
+
+#### Based on the correlation coefficient, would you use depth to predict the price of a diamond?  and why?
+
+Response:
+
+No
 
 
+much smaller than |0.3|
+
+***
+
+### price vs. carat
+
+``` {r price vs carat}
+# Create a scatterplot of price vs carat
+# and omit the top 1% of price and carat
+# values.
+
+ggplot(data = diamonds, aes(x = carat, y = price)) + 
+  geom_point(alpha = 1/100) +
+  coord_cartesian(xlim = c(0, quantile(diamonds$carat, 0.99)),
+                  ylim = c(0, quantile(diamonds$price, 0.99)))
+```
+
+
+
+***
+
+### price vs. volume
+
+``` {r price vs volume}
+# Create a scatterplot of price vs. volume (x * y * z).
+# This is a very rough approximation for a diamond's volume.
+
+# Create a new variable for volume in the diamonds data frame.
+# This will be useful in a later exercise.
+
+ggplot(data = diamonds, aes(x = x * y * z, y = price)) + 
+  geom_point(alpha = 1/10) +
+  coord_trans(y="log10") +
+  coord_cartesian(xlim = c(0, 354))
+# 354 is 99% bound of volume
+
+diamonds$volume <- diamonds$x * diamonds$y * diamonds$z
+
+```
+
+
+#### What are your observations from the price vs. volume scatterplot?
+Response:
+
+some outliers. looks exponential. high upper range  in bounding box at higher volumes
+
+
+
+``` {r correlation of depth vs volume}
+with(subset(diamonds, (volume != 0) & (volume < 800)) , 
+            cor.test(price, volume))
+```
+
+#### What is the correlation of price and volume? 
+
+Exclude diamonds that ahve a volume of 0 or that are greater than or equal to 800.
+
+
+Response:
+
+0.92
+
+***
+
+### Adjustments - price vs. volume
+
+``` {r Adjustments - price vs. volume}
+# Subset the data to exclude diamonds with a volume
+# greater than or equal to 800. Also, exclude diamonds
+# with a volume of 0. Adjust the transparency of the
+# points and add a linear model to the plot. (See the
+# Instructor Notes or look up the documentation of
+# geom_smooth() for more details about smoothers.)
+
+# We encourage you to think about this next question and
+# to post your thoughts in the discussion section.
+
+# Do you think this would be a useful model to estimate
+# the price of diamonds? Why or why not?
+
+ggplot(data = subset(diamonds, (volume != 0) & (volume < 800)), 
+       aes(x = x * y * z, y = price)) + 
+  geom_point(alpha = 1/20) +
+  stat_smooth(method = "lm", color = "red") +
+  coord_cartesian(xlim = c(1, 354))
+
+# probably move away from a linear model, since data looks to be more exponential
+
+```
+
+
+***
+
+### Mean Price by Clarity
+
+``` {r Mean Price by Clarity}
+# Use the function dplyr package
+# to create a new data frame containing
+# info on diamonds by clarity.
+
+# Name the data frame diamondsByClarity
+
+# The data frame should contain the following
+# variables in this order.
+
+#       (1) mean_price
+#       (2) median_price
+#       (3) min_price
+#       (4) max_price
+#       (5) n
+
+# where n is the number of diamonds in each
+# level of clarity.
+suppressMessages(library(ggplot2))
+suppressMessages(library(dplyr))
+data(diamonds)
+
+diamondsByClarity <- diamonds %.%
+  group_by(clarity) %.%
+  summarise(mean_price = mean(price),
+            median_price = median(price),
+            min_price = min(price),
+            max_price = max(price),
+            n = n()) %.%
+   arrange(clarity)
+
+```
+
+
+***
+
+###  Bar Charts of Mean Price
+
+``` {r Bar Charts of Mean Price}
+
+
+```
