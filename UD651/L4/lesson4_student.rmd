@@ -12,7 +12,13 @@ Notes:
 Notes:
 
 ```{r Scatterplots}
-
+library(ggplot2)
+setwd("~/projects/Classes/FoundationsOfDataScience_sliderule/github/UD651/L4")
+pf <- read.csv('pseudo_facebook.tsv', sep = '\t')
+#qplot(x= age, y= friend_count, data = pf)
+qplot(age, friend_count, data = pf)
+#ggplot(aes(x = age, y = friend_count), data = pf) + 
+#  geom_point()
 ```
 
 ***
@@ -26,7 +32,34 @@ Response:
 Notes:
 
 ```{r ggplot Syntax}
+ggplot(aes(x = age, y = friend_count), data = pf) + 
+  geom_point(alpha = 1/20) +
+  xlim(13,90)
 
+ggplot(aes(x = age, y = friend_count), data = pf) + 
+  geom_jitter(alpha = 1/20) +
+  xlim(13,90)
+  
+qplot(age, friend_count, data = pf) +
+ coord_trans(ytrans="sqrt")
+
+ggplot(aes(x = age, y = friend_count), data = pf) + 
+  geom_point(alpha = 1/20) +
+  coord_trans(y="sqrt") +
+  xlim(13,90)
+
+ggplot(aes(x = age, y = friend_count), data = pf) + 
+  geom_jitter(alpha = 1/20, position = position_jitter(h = 0)) +
+  coord_trans(y="sqrt") +
+  xlim(13,90)
+
+
+ggplot(aes(x = age, y = friendships_initiated + 1), data = pf) + 
+  geom_jitter(alpha = 1/20, position = position_jitter(h = 0)) +
+  coord_trans(y="log10") +
+  xlim(13,90)
+
+summary(pf$age)
 ```
 
 ***
