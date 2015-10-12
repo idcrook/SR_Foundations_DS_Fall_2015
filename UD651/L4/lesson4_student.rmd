@@ -104,13 +104,42 @@ Notes:
 Notes:
 
 ```{r Conditional Means}
+#install.packages('dplyr')
+library(dplyr)
 
+age_groups <- group_by(pf, age)
+pf.fc_by_age <- summarize(age_groups, 
+        friend_count_mean = mean(friend_count),
+        friend_count_median = median(friend_count),
+        n = n())
+pf.fc_by_age <- arrange(pf.fc_by_age, age)
+
+head(pf.fc_by_age)
+
+
+```
+
+```{r Conditional Means Alternate Code}
+library(dplyr)
+
+pf.fc_by_age <- pf %.%
+  group_by(age) %.%
+  summarise(friend_count_mean = mean(friend_count),
+        friend_count_median = median(friend_count),
+        n = n()) %.%
+   arrange(age)
+
+
+head(pf.fc_by_age, 20)
 ```
 
 Create your plot!
 
 ```{r Conditional Means Plot}
-
+#ggplot(aes(x = age, y = friend_count_mean), data = pf.fc_by_age) +
+#  geom_line()
+ggplot(aes(x = age, y = friend_count_median), data = pf.fc_by_age) +
+  geom_line()
 ```
 
 ***
@@ -119,6 +148,22 @@ Create your plot!
 Notes:
 
 ```{r Overlaying Summaries with Raw Data}
+ggplot(aes(x = age, y = friend_count + 1), data = pf) + 
+  coord_cartesian(xlim = c(13, 90)) +
+  geom_jitter(alpha = 1/20, position = position_jitter(h = 0)) +
+  coord_trans(y="log10")
+
+ggplot(aes(x = age, y = friend_count), data = pf) + 
+  coord_cartesian(xlim = c(13, 70), ylim = c(0,1000)) +
+  geom_point(alpha = 1/20, 
+             position = position_jitter(h = 0),
+             color = 'orange') +
+  geom_line(stat = 'summary', fun.y = median) +
+  geom_line(stat = 'summary', fun.y = mean, color = 'blue') +
+  geom_line(stat = 'summary', fun.y = quantile, probs = .1,
+            linetype = 2, color = 'purple') +
+  geom_line(stat = 'summary', fun.y = quantile, probs = .9,
+            linetype = 2, color = 'purple') 
 
 ```
 
