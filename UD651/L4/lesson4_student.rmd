@@ -183,13 +183,19 @@ Notes:
 Notes:
 
 ```{r Correlation}
+?cor.test
 
+cor.test(pf$age, pf$friend_count,
+         method=c("pearson"))
+with(pf, cor.test(age, friend_count, method="pearson"))
 ```
 
 Look up the documentation for the cor.test function.
 
 What's the correlation between age and friend count? Round to three decimal places.
 Response:
+
+-0.027
 
 ***
 
@@ -198,6 +204,8 @@ Notes:
 
 ```{r Correlation on Subsets}
 #with(                 , cor.test(age, friend_count))
+with(subset(pf, age <= 70), cor.test(age, friend_count,
+                                   method="pearson"))
 ```
 
 ***
@@ -205,31 +213,62 @@ Notes:
 ### Correlation Methods
 Notes:
 
+```{r Spearman correlation}
+with(subset(pf, age <= 70), cor.test(age, friend_count,
+                                   method="spearman"))
+```
+
 ***
 
 ## Create Scatterplots
 Notes:
 
 ```{r}
+names(pf)
+#qplot(www_likes_received, www_likes_received/likes_received, data = pf)
+#qplot(www_likes_received, likes_received, data = pf) +
+#  coord_cartesian(xlim = c(0, 12500), ylim = c(0,50000)) 
+#qplot(www_likes_received, likes_received, data = pf) +
+#  coord_cartesian(xlim = c(0, 2500), ylim = c(0,20000)) 
+
+ggplot(aes(x = www_likes_received, y = likes_received), data = pf) + 
+  coord_cartesian(xlim = c(0, 300), ylim = c(0,1250)) +
+  geom_point(alpha = 1/10, 
+             position = position_jitter(h = 0),
+             color = 'blue') +
+  geom_line(stat = 'summary', fun.y = mean) +
+  geom_line(y = pf$www_likes_received)
 
 ```
-
 ***
 
 ### Strong Correlations
 Notes:
 
 ```{r Strong Correlations}
-
+ggplot(aes(x = www_likes_received, y = likes_received), data = pf) + 
+  coord_cartesian(xlim = c(0, quantile(pf$www_likes_received, 0.95)),
+                  ylim = c(0, quantile(pf$likes_received, 0.95))) +
+  geom_point(alpha = 1/10, 
+             position = position_jitter(h = 0),
+             color = 'blue') +
+  geom_smooth(method = "lm", color = "red") +
+  geom_line(stat = 'summary', fun.y = mean) +
+  geom_line(y = pf$www_likes_received)
 ```
 
 What's the correlation betwen the two variables? Include the top 5% of values for the variable in the calculation and round to 3 decimal places.
 
-```{r Correlation Calcuation}
-
+```{r Correlation Calculation}
+with(pf, cor.test(www_likes_received, likes_received, 
+                  method="pearson"))
 ```
 
 Response:
+      cor 
+0.9479902 
+
+0.948
 
 ***
 
