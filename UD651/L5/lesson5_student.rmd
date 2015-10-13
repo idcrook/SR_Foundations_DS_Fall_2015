@@ -88,6 +88,9 @@ Notes:
 
 ```{r Plotting Conditional Summaries}
 
+ggplot(aes(x = age, y = median_friend_count), 
+       data = pf.fc_by_age_gender) + 
+  geom_line(aes(color = gender), stat = 'summary', fun.y = median)
 ```
 
 ***
@@ -95,21 +98,39 @@ Notes:
 ### Thinking in Ratios
 Notes:
 
+how many times more friends does F have than M?
+
 ***
 
 ### Wide and Long Format
 Notes:
+
+reshape data -> wide format from long format.
+
+reshape2
 
 ***
 
 ### Reshaping Data
 Notes:
 
-```{r}
-install.packages('reshape2')
+```{r reshaping data}
+#install.packages('reshape2')
 library(reshape2)
+
+pf.fc_by_age_gender.wide <- dcast(pf.fc_by_age_gender,
+                                  age ~ gender,
+                                  value.var = 'median_friend_count')
+head(pf.fc_by_age_gender.wide)
+
 ```
 
+
+``` {r reshaping data - alternate}
+#pf.fc_by_age_gender.wide <-     subset(pf.fc_by_age_gender[c('age', 'gender', #'median_friend_count')],                   !is.na(gender)) %>% 
+#    spread(gender, median_friend_count) %>% 
+#    mutate(ratio = male / female) 
+```
 
 ***
 
@@ -118,6 +139,28 @@ Notes:
 
 ```{r Ratio Plot}
 
+# Plot the ratio of the female to male median
+# friend counts using the data frame
+# pf.fc_by_age_gender.wide.
+
+# Think about what geom you should use.
+# Add a horizontal line to the plot with
+# a y intercept of 1, which will be the
+# base line. Look up the documentation
+# for geom_hline to do that. Use the parameter
+# linetype in geom_hline to make the
+# line dashed.
+
+# The linetype parameter can take the values 0-6:
+# 0 = blank, 1 = solid, 2 = dashed
+# 3 = dotted, 4 = dotdash, 5 = longdash
+# 6 = twodash
+
+ggplot(aes(x = age, y = female / male), 
+       data = pf.fc_by_age_gender.wide) + 
+  geom_line() +
+  geom_smooth() +
+  geom_hline(aes (yintercept=1), alpha = 6/10, color = 'red', linetype = 2)
 ```
 
 ***
@@ -125,7 +168,23 @@ Notes:
 ### Third Quantitative Variable
 Notes:
 
+tenure : days since joining FB
+2014 is reference year
 ```{r Third Quantitative Variable}
+# Create a variable called year_joined
+# in the pf data frame using the variable
+# tenure and 2014 as the reference year.
+
+# The variable year joined should contain the year
+# that a user joined facebook.
+
+### question is ambiguous because it doesn't say whther to start windows at beginning or end of 2014
+
+year_joined <- with(pf, 
+                    2014 - trunc(tenure/365))
+
+pf$year_joined <- with(pf, 
+                    2014 - ceiling(tenure/365))  
 
 ```
 
@@ -135,16 +194,53 @@ Notes:
 Notes:
 
 ```{r Cut a Variable}
+summary(pf$year_joined )
+table(pf$year_joined )
+
+# Create a new variable in the data frame
+# called year_joined.bucket by using
+# the cut function on the variable year_joined.
+
+# You need to create the following buckets for the
+# new variable, year_joined.bucket
+
+#        (2004, 2009]
+#        (2009, 2011]
+#        (2011, 2012]
+#        (2012, 2014]
+
+# Note that a parenthesis means exclude the year and a
+# bracket means include the year.
+
+pf$year_joined.bucket <- with(pf, 
+                           cut(year_joined, 
+  breaks = c(2004, 2009, 2011, 2012, 2014))
+)
 
 ```
 
 ***
-
+`
 ### Plotting it All Together
 Notes:
 
 ```{r Plotting it All Together}
 
+ggplot(aes(x = year_joined.bucket),
+       data = subset(pf, !is.na(gender))) + geom_histogram()
+
+# Create a line graph of friend_count vs. age
+# so that each year_joined.bucket is a line
+# tracking the median user friend_count across
+# age. This means you should have four different
+# lines on your plot.
+
+# You should subset the data to exclude the users
+# whose year_joined.bucket is NA.
+
+ggplot(aes(x = age, y = friend_count), 
+              data = subset(pf, !is.na(year_joined.bucket))) + 
+  geom_line(aes(color = year_joined.bucket), stat = 'summary', fun.y = median)
 ```
 
 ***
@@ -153,6 +249,24 @@ Notes:
 Notes:
 
 ```{r Plot the Grand Mean}
+# Write code to do the following:
+
+# (1) Add another geom_line to code below
+# to plot the grand mean of the friend count vs age.
+
+# (2) Exclude any users whose year_joined.bucket is NA.
+
+# (3) Use a different line type for the grand mean.
+
+# As a reminder, the parameter linetype can take the values 0-6:
+
+# 0 = blank, 1 = solid, 2 = dashed
+# 3 = dotted, 4 = dotdash, 5 = longdash
+# 6 = twodash
+ggplot(aes(x = age, y = friend_count), 
+              data = subset(pf, !is.na(year_joined.bucket))) + 
+  geom_line(aes(color = year_joined.bucket), stat = 'summary', fun.y = mean) +
+  geom_line(stat = 'summary', fun.y = mean, linetype = 2)
 
 ```
 
@@ -163,6 +277,11 @@ Notes:
 
 ```{r Friending Rate}
 
+pf.fc_rate <- with(subset(pf, tenure >= 1),
+                   friend_count / tenure)
+summary(pf.fc_rate)
+
+
 ```
 
 ***
@@ -172,11 +291,29 @@ Notes:
 
 What is the median friend rate?
 
+0.2205
+0.22
+
 What is the maximum friend rate?
 
+417.0000
+
 ```{r Friendships Initiated}
+# Create a line graph of mean of friendships_initiated per day (of tenure)
+# vs. tenure colored by year_joined.bucket.
+
+# You need to make use of the variables tenure,
+# friendships_initiated, and year_joined.bucket.
+
+# You also need to subset the data to only consider user with at least
+# one day of tenure.
+
+ggplot(aes(x = -tenure, y = friendships_initiated / tenure), 
+              data = subset(pf, tenure >= 1)) + 
+  geom_line(aes(color = year_joined.bucket), stat = 'summary', fun.y = mean)
 
 ```
+
 
 ***
 
@@ -211,11 +348,22 @@ ggplot(aes(x = 90 * round(tenure / 90), y = friendships_initiated / tenure),
 
 ```
 
+```{r Bias-Variance Tradeoff Revisited smooth}
+# Instead of geom_line(), use geom_smooth() to add a smoother to the plot.
+# You can use the defaults for geom_smooth() but do color the line
+# by year_joined.bucket
+ggplot(aes(x = 7 * round(tenure / 7), y = friendships_initiated / tenure),
+       data = subset(pf, tenure > 0)) +
+  geom_smooth(aes(color = year_joined.bucket))
+```
+
 ***
 
 ### Sean's NFL Fan Sentiment Study
 Notes:
 
+spline <- bad model
+moving average <- 1 day, 7 day MA much better
 ***
 
 ### Introducing the Yogurt Data Set
@@ -227,8 +375,21 @@ Notes:
 Notes:
 
 ```{r Histograms Revisited}
+yo = read.csv('yogurt.csv')
+# str(yo)
+
+# change the id (household ID) from an int to a factor
+yo$id <- factor(yo$id)
+str(yo)
+
+ggplot(aes(x = price), data = yo) + geom_histogram()
+ggplot(aes(x = price), data = yo) + geom_histogram( binwidth=10)
 
 ```
+
+What do you notice?
+
+- distribution trends noticeable at different price points.
 
 ***
 
@@ -236,7 +397,23 @@ Notes:
 Notes:
 
 ```{r Number of Purchases}
+# Create a new variable called all.purchases,
+# which gives the total counts of yogurt for
+# each observation or household.
 
+# One way to do this is using the transform
+# function. You can look up the function transform
+# and run the examples of code at the bottom of the
+# documentation to figure out what it does.
+
+# The transform function produces a data frame
+# so if you use it then save the result to 'yo'!
+
+# OR you can figure out another way to create the
+# variable.
+
+yo <- transform(yo, all.purchases = strawberry + blueberry + pina.colada + plain + mixed.berry)
+head(yo[3:10], 30)
 ```
 
 ***
@@ -246,6 +423,11 @@ Notes:
 
 ```{r Prices over Time}
 
+#ggplot(aes(x = time, y = price), data = yo) + 
+#  geom_point(alpha = 1/10, color = 'red')
+
+ggplot(aes(x = time, y = price), data = yo) + 
+  geom_jitter(alpha = 2/10, shape = 21, color = 'red')
 ```
 
 ***
@@ -258,8 +440,21 @@ Notes:
 ### Looking at Samples of Households
 
 ```{r Looking at Sample of Households}
+# set the seed for reproducible resuults
+set.seed(4563)
+sample.ids <- sample(levels(yo$id), 16)
+
+ggplot(aes(x = time, y = price), 
+       data = subset(yo, id %in% sample.ids)) + 
+  facet_wrap( ~ id) +
+  geom_line() +
+  geom_point(aes(size = all.purchases), pch = 1)
+
+ggsave('yogurt_sample16.png')
 
 ```
+
+I observed a variety of different purchasing patterns. Some price curves look like W's, with some heavy-consuming households.  There were many lighter households in the sample as well.  Most, but not all, households exhibited trends of increasing prices over time.
 
 ***
 
