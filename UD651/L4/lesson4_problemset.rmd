@@ -285,8 +285,31 @@ diamonds_mp_by_color <- summarise(diamonds_by_color, mean_price = mean(price))
 # ===================================================================
 library(gridExtra)
 
-ggplot(data = diamonds_mp_by_clarity,
-       aes(x = clarity)) +
-  geom_bar()
+p1 = ggplot(data = diamonds_mp_by_clarity,
+       aes(x = factor(clarity), y = mean_price)) +
+  geom_bar(stat = "identity")
 
+p2 = ggplot(data = diamonds_mp_by_color,
+       aes(x = factor(color), y = mean_price)) +
+  geom_bar(stat = "identity")
+
+grid.arrange(p1, p2, ncol = 1)
 ```
+
+#### What did you notice in each of the bar charts for mean price by clarity and mean price by color?
+
+Response:
+
+mean price by clarity:
+
+no discernable linear relation.  a few of the factors had lower than across-the-board average, while one (SI2) had an outlier higher mean_price
+
+mean price by color:
+
+increasing price by factor color
+
+
+
+
+
+
