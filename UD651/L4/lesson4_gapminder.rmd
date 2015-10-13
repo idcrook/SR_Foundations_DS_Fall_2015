@@ -1,0 +1,136 @@
+---
+title: "Udacity 651 PS4"
+output:
+  html_document:
+    toc: true
+    theme: united
+---
+
+## Problem set 4 - gapminder
+
+### Using data set Aged 65+ labour force participation rate (%)
+
+*** 
+
+Getting started
+
+```{r libraries and wd}
+library(ggplot2)
+library(dplyr)
+library(gridExtra)
+
+setwd("~/projects/Classes/FoundationsOfDataScience_sliderule/github/UD651/L4")
+df = read.csv ("indicator_t_above_65_labour_to_pop_percent_data_fixed.csv", header = TRUE)
+
+head(df)
+```
+
+*** 
+
+```{r Scatterplot of 1980 vs 1988}
+ggplot(aes(x = X1980, y = X1988), data = df) +
+  geom_point()
+```
+
+
+*** 
+
+
+``` {r on linear baseline plots}
+p1 = ggplot(aes(x = X1980, y = X1988), data = df) +
+  geom_point() +
+  geom_smooth(method="lm", color = "red") +
+  geom_line(y = df$X1980, color= "blue")
+
+p2 = ggplot(aes(x = X1988, y = X2007), data = df) +
+  geom_point() +
+  geom_smooth(method="lm", color = "red") +
+  geom_line(y = df$X1988, color= "blue")
+
+p3 = ggplot(aes(x = X1980, y = X2007), data = df) +
+  geom_point() +
+  geom_smooth(method="lm", color = "red") +
+  geom_line(y = df$X1980, color= "blue")
+
+grid.arrange(p1, p2, p3, ncol = 1)
+
+```
+
+#### Trend spotting
+
+In the graphs, blue line indicates no change, while red line is a smooth linear fit of the data.  In all year endpoints shown, the linear fit is less than the baseline, indicating that average employment of 65 years and over is declining in most countries in the data set.
+
+
+*** 
+
+### mean trend
+
+
+``` {r mean trend}
+df2 <- df
+df2$Country <- NULL
+
+country_groups <- group_by(df, Country)
+df.emp_1980 <- summarize(country_groups, 
+        country_mean = mean(X1980),
+        country_median = median(X1980),
+        n = n())
+df.emp_1980 <- arrange(df.emp_1980, Country)
+
+df.emp_2007 <- summarize(country_groups, 
+        country_mean = mean(X2007),
+        country_median = median(X2007),
+        n = n())
+df.emp_2007 <- arrange(df.emp_2007, Country)
+
+ggplot(aes(x = df.emp_1980$country_mean, y = df.emp_2007$country_mean), data = df) +
+  geom_point() +
+  geom_smooth(method="lm", color = "red") +
+  geom_line(y = df.emp_1980$country_mean, color= "blue")
+
+```
+
+
+#### Trendspotting
+
+In the linear fit is less than the baseline in this chart, indicating that mean (employment percentage for 65 years and over) in each country is declining in general, in most of the countries in the data set.
+
+
+***
+
+
+### Year list
+
+``` {r year list}
+years = c(
+  "X1980",
+  "X1981",
+  "X1982",
+  "X1983",
+  "X1984",
+  "X1985",
+  "X1986",
+  "X1987",
+  "X1988",
+  "X1989",
+  "X1990",
+  "X1991",
+  "X1992",
+  "X1993",
+  "X1994",
+  "X1995",
+  "X1996",
+  "X1997",
+  "X1998",
+  "X1999",
+  "X2000",
+  "X2001",
+  "X2002",
+  "X2003",
+  "X2004",
+  "X2005",
+  "X2006",
+  "X2007"
+  )
+```
+
