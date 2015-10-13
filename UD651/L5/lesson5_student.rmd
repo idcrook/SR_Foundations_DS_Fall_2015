@@ -413,7 +413,7 @@ Notes:
 # variable.
 
 yo <- transform(yo, all.purchases = strawberry + blueberry + pina.colada + plain + mixed.berry)
-head(yo[3:10], 30)
+#head(yo[3:10], 30)
 ```
 
 ***
@@ -469,7 +469,32 @@ Notes:
 ***
 
 ### Scatterplot Matrix
+
+``` {r Scatterplot Matrices}
+#install.packages('GGally')
+library(GGally)
+theme_set(theme_minimal(20))
+
+# seed 
+set.seed(1836)
+pf_subset <- pf [, c(2:15)]
+names(pf_subset)
+ggpairs(pf_subset[sample.int(nrow(pf_subset), 1000), ])
+
+```
 Notes:
+
+Response:
+
+CC of friendship initiated and friend count?
+0.769
+
+CC of age and mobile likes?
+-0.0475
+
+What type of plot below the diagonal?  What type of plots for gender pairs?
+scatter plot.  histogram
+
 
 ***
 
@@ -477,6 +502,8 @@ Notes:
 Notes:
 
 ***
+
+wget https://s3.amazonaws.com/udacity-hosted-downloads/ud651/nci.tsv
 
 ### Heat Maps
 Notes:
@@ -502,6 +529,8 @@ ggplot(aes(y = gene, x = case, fill = value),
 
 ### Analyzing Three of More Variables
 Reflection:
+
+Learned some on how to transform variables and generate relative variable for additional graphing techniques.  Learned how to bucket variables for analysis and plotting, as well as categorizing factors and plotting conditional summaries.
 
 ***
 
