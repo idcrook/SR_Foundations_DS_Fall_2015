@@ -10,6 +10,11 @@ output:
 
 ### Using data set Aged 65+ labour force participation rate (%)
 
+For output of this RMD file (including graphs):
+
+- http://github.crookster.org/SR_Foundations_DS_Fall_2015/UD651/L4/lesson4_gapminder.html
+
+
 *** 
 
 Getting started
