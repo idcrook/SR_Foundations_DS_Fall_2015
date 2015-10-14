@@ -28,31 +28,146 @@ library(reshape2)
 setwd("~/projects/Classes/FoundationsOfDataScience_sliderule/github/UD651/L5")
 df = read.csv ("indicator_t_above_65_labour_to_pop_percent_data_fixed.csv", header = TRUE)
 
-head(df)
-str(df)
-
-# colnames(df) <- c("country", 1980:2007)
-
-# transpose 
-#tdf <- t(df)
-#head(tdf)
-#str(tdf)
+# head(df)
+colnames(df) <- c("country", 1980:2007)
+#str(df)
 
 ```
 
 *** 
 
-### Melt some data
+### transform the data into a long format
 
-```{r Melt some data}
-#ggplot(aes(x = '1980', y = '1988'), data = df) +
-#  geom_point()
+```{r gather years into observations}
+#install.packages("tidyr")
+library(tidyr)
+
+ldf <- gather(df, "year", "percentage", 2:29)
+
+# want the years to be numeric instead of factor?
+ldf$year_numeric <- with(ldf, as.numeric(levels(year))[year])
+# head(ldf) 
+str(ldf)
 ```
 
-```{r Scatterplot of 1980 vs 1988}
-ggplot(aes(x = X1980, y = X1988), data = df) +
-  geom_point()
-```
 
 *** 
+
+### dist of percentages across all years and country
+
+
+```{r Distribution of percentages in dataset}
+# layer all years
+ggplot(aes(x = percentage), data = ldf) +
+  geom_histogram(aes(color = year))
+
+# separate each year
+ggplot(aes(x = percentage), data = ldf) +
+  geom_histogram(binwidth = 2.5) +
+  facet_wrap( ~ year, ncol = 4)
+
+```
+
+
+*** 
+
+### percentage trends by country
+
+```{r percentage graphs}
+## trend by country - line graph over time
+#ggplot(aes(x = year_numeric, y = percentage), data = ldf) +
+#  geom_line(aes(color = country))
+
+# same  on semi-log scale, to avoid the bunching at the lower percentages
+ggplot(aes(x = year_numeric, y = percentage), data = ldf) +
+  geom_line(aes(color = country)) +
+  scale_y_log10()
+
+# another trend by country graph
+ggplot(aes(x = country, y = percentage), data = ldf) +
+  geom_point(aes(color = year), alpha = 5/10) +
+  scale_fill_brewer(type = "div")
+```
+
+#### Comments:
+
+in 1990, there were a number of increases in a few countries; were these due to regional macroeconomic effects?  would like to cluster geographically.
+
+general trends at a glance seem to show that there is steady or decline in employment rate, with a few exceptions, but there is really too much noise to see for sure.
+
+
+
+*** 
+
+
+### percentage trends by country
+
+```{r percentage mean/median by country}
+
+ldf.pct_by_country <- ldf %.%
+  group_by(country) %.%
+  summarise(pct_mean = mean(percentage),
+            pct_median = median(percentage),
+            n = n()) %.%
+   arrange(country)
+
+#head(ldf.pct_by_country)
+```
+
+
+
+```{r linear models for each country}
+
+tmp <- with(ldf,
+            by(ldf, country,
+               function(x) lm(percentage ~ year_numeric, data = x)
+               )
+            )
+
+ldf.lm_by_country <- as.data.frame(t(sapply(tmp, coef)))
+
+colnames(ldf.lm_by_country) <- c('intercept','slope')
+
+ggplot(aes(y = slope, x = intercept), 
+       data = ldf.lm_by_country) +
+  geom_point(alpha = 3/10) +
+  geom_hline(aes (yintercept=0), alpha = 6/10, color = 'blue', linetype = 2) +
+  geom_vline(aes (xintercept=0), alpha = 6/10, color = 'blue', linetype = 2) 
+```
+
+#### Comments:
+
+Seems that more of the countries have a negative slope in linear model (percentage decreased over time).
+
+***
+
+### Bucketed linear model for change in percentage by country
+
+Using linear models generated for each country
+
+``` {r bucketed linear models}
+## couldn't get variable to work
+#cdf_height <- 15
+
+ggplot(aes(x = slope), data = ldf.lm_by_country) +
+  geom_histogram(alpha = 6/10, binwidth = 2.5/100) +
+  geom_vline(aes (xintercept=0), color = 'blue') +
+  geom_step(aes(len = 15, y = ..y.. * 15), stat = "ecdf", color = 'green') +
+  geom_hline(aes (yintercept=15 / 2), alpha = 6/10, color = 'blue') 
+    
+
+```
+
+In the plot above with the CDF (cumulative distribution function) included in the histogram, it may be noted that more than half of the countries exhibited a decline (negative slope in the linear models) for the 65 years and over employment rate in the years that the observations span.
+
+A box plot graph and numerical summary of the linear model slopes also show this (with the median value for slops being negative):
+
+``` {r box plot and numerical summary of the trend slope by country }
+ggplot(aes(x = 0, y = slope), data = ldf.lm_by_country) +
+  geom_boxplot() 
+
+summary(ldf.lm_by_country$slope)
+```
+
+Next steps might be geographical region clustering analysis or weighted-by-population analysis.  Each of those would require additional data to be pulled in.
 
