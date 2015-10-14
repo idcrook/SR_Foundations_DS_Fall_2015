@@ -13,4 +13,6 @@ https://github.com/dpcrook/SR_Foundations_DS_Fall_2015/tree/master/UD651/L5
 
 Submitted: 
 
-http://github.crookster.org/SR_Foundations_DS_Fall_2015/UD651/L4/lesson4_problemset.html,http://github.crookster.org/SR_Foundations_DS_Fall_2015/UD651/L4/lesson4_gapminder.html,https://github.com/dpcrook/SR_Foundations_DS_Fall_2015/tree/master/UD651/L4
+https://github.com/dpcrook/SR_Foundations_DS_Fall_2015/tree/master/UD651/L5
+
+
