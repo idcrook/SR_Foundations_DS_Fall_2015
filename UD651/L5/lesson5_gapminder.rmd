@@ -1,0 +1,58 @@
+---
+title: "Udacity 651 PS5 - GapMinder"
+output:
+  html_document:
+    toc: true
+    theme: united
+---
+
+## Problem set 5 - gapminder
+
+### Using data set Aged 65+ labour force participation rate (%)
+
+For output of this RMD file (including graphs):
+
+- http://github.crookster.org/SR_Foundations_DS_Fall_2015/UD651/L5/lesson5_gapminder.html
+
+
+*** 
+
+Getting started
+
+```{r libraries and wd}
+library(ggplot2)
+library(dplyr)
+library(gridExtra)
+library(reshape2)
+
+setwd("~/projects/Classes/FoundationsOfDataScience_sliderule/github/UD651/L5")
+df = read.csv ("indicator_t_above_65_labour_to_pop_percent_data_fixed.csv", header = TRUE)
+
+head(df)
+str(df)
+
+# colnames(df) <- c("country", 1980:2007)
+
+# transpose 
+#tdf <- t(df)
+#head(tdf)
+#str(tdf)
+
+```
+
+*** 
+
+### Melt some data
+
+```{r Melt some data}
+#ggplot(aes(x = '1980', y = '1988'), data = df) +
+#  geom_point()
+```
+
+```{r Scatterplot of 1980 vs 1988}
+ggplot(aes(x = X1980, y = X1988), data = df) +
+  geom_point()
+```
+
+*** 
+
