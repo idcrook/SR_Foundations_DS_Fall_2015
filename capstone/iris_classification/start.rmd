@@ -1,0 +1,38 @@
+---
+title: "iris - start with dplyr"
+output: html_document
+---
+
+
+### Loading dplyr and an example dataset
+
+* dplyr will mask a few base functions
+* If you also use plyr, load plyr first
+* hflights is flights departing from two Houston airports in 2011
+
+```{r}
+# load packages
+suppressMessages(library(dplyr))
+
+# explore data
+data("iris")
+head(iris)
+```
+
+***
+
+#### some dplyr summaries and observations
+
+
+``` {r}
+
+glimpse(iris)
+
+iris %>%
+        group_by(Species) %>%
+        summarise(avg = mean(Sepal.Width)) %>%
+        arrange(avg)
+
+summarise(iris, avg = mean(Sepal.Length))
+summarise_each(iris, funs(mean))
+```
