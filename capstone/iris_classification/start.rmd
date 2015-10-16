@@ -35,4 +35,25 @@ iris %>%
 
 summarise(iris, avg = mean(Sepal.Length))
 summarise_each(iris, funs(mean))
+
+summarise_each(iris, funs(mean))
+```
+
+#### some new variables
+
+``` {r}
+iris <- mutate(iris, sepal = Sepal.Length + Sepal.Width)
+```
+
+### scatterplot matrices
+
+``` {r}
+library(GGally)
+
+# seed
+set.seed(1828)
+names(iris)
+ggpairs(iris[sample.int(nrow(iris), 100), ])
+
+
 ```
