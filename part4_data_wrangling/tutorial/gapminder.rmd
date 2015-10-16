@@ -1,0 +1,162 @@
+---
+title: "Data Wrangling with R tutorial - gapminder"
+output:
+  html_document:
+    toc: true
+    theme: united
+---
+
+## Data Wrangling with R
+
+https://ramnathv.github.io/pycon2014-r/visualize/base_graphics.html
+
+*** 
+
+### Base Graphics
+
+``` {r load in gapminder data}
+library(plyr)
+library(dplyr)
+library(ggplot2)
+
+gapminder <- read.csv('gapminder.csv', stringsAsFactors = F)
+gapminder_1982 <- subset(gapminder, year == 1982)
+plot(lifeExp ~ gdpPercap, data = gapminder_1982, log = "x")
+
+
+mycol <- c(Asia = "tomato", Europe = "chocolate4", Africa = "dodgerblue2", 
+  Americas = "darkgoldenrod1", Oceania = "green4"
+)
+plot(lifeExp ~ gdpPercap, data = gapminder_1982, log = "x",
+ col = mycol[continent]    
+)
+```
+
+
+#### custom function
+
+``` {r}
+#' Scale a transformed variable to a given range
+#'
+#' @param var variable to scale
+#' @param f function to transform var before scaling
+#' @param r range to which variable should be scaled
+#'
+#' @example
+#' x = rnorm(10)
+#' mycex(x, square, c(1, 10))
+mycex <- function(var, r, f = sqrt){
+  x = f(var)
+  x_scaled = (x - min(x))/(max(x) - min(x))
+  r[1] + x_scaled * (r[2] - r[1])
+}
+
+plot(lifeExp ~ gdpPercap, data = gapminder_1982, log = "x",
+ col = mycol[continent],
+ cex = mycex(pop, r = c(0.2, 10))
+)
+
+
+trend <- lm(lifeExp ~ log10(gdpPercap), data = gapminder_1982)
+plot(lifeExp ~ gdpPercap, data = gapminder_1982, log = "x",
+ col = mycol[continent],
+ cex = mycex(pop, r = c(0.2, 10))
+)
+abline(trend)
+
+
+plot(lifeExp ~ gdpPercap, data = gapminder_1982, log = "x",
+ col = mycol[continent],
+ cex = mycex(pop, r = c(0.2, 10))
+)
+d_ply(gapminder_1982, .(continent), function(d){
+  trend <- lm(lifeExp ~ log10(gdpPercap), data = d)
+  abline(trend, col = mycol[d$continent[1]])
+})
+```
+
+***
+
+### Grammar of graphics 
+
+***
+
+#### tips
+
+``` {r}
+data(tips, package = 'reshape2')
+library(ggplot2)
+qplot(total_bill, tip, data = tips, geom = "point")
+
+
+myplot <- ggplot(tips, aes(x = total_bill, y = tip)) +
+  geom_point(aes(color = sex)) +
+  geom_smooth(method = 'lm')
+
+layer_point <- geom_point(
+  mapping = aes(x = total_bill, y = tip, color = sex),
+  data = tips,
+  size = 3
+)
+
+ggplot() + layer_point
+
+
+model <- lm(tip ~ total_bill, data = tips)
+fitted_tips <- data.frame(
+  total_bill = tips$total_bill, 
+  predict(model, interval = "confidence")
+)
+head(fitted_tips)
+
+layer_line <- geom_line(
+  mapping = aes(x = total_bill, y = fit),
+  data = fitted_tips,
+  color = "darkred"
+)
+ggplot() + layer_point + layer_line
+
+
+layer_ribbon <- geom_ribbon(
+  mapping = aes(x = total_bill, ymin = lwr, ymax = upr),
+  data = fitted_tips,
+  alpha = 0.3
+)
+ggplot() + layer_point + layer_line + layer_ribbon
+
+
+layer_smooth <- geom_line(
+  mapping = aes(x = total_bill, y = tip),
+  data = tips,
+  stat = "smooth",
+  method = "lm"
+)
+ggplot() + layer_point + layer_smooth
+
+ggplot(tips, aes(x = total_bill, y = tip)) +
+  geom_point(aes(color = sex)) +
+  geom_smooth(method = 'lm')
+```
+
+
+***
+
+### presidential
+
+***
+
+#### faceting
+
+
+``` {r}
+ggplot() +
+  layer_point +
+  layer_smooth +
+  facet_grid(smoker ~ day)
+
+
+
+
+
+```
+
