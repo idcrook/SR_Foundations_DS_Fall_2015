@@ -58,9 +58,6 @@ library(GGally)
 theme_set(theme_minimal(20))
 
 
-#install.packages("FSelector")
-library(FSelector)
-
 # seed
 set.seed(1828)
 names(iris)
@@ -134,4 +131,25 @@ iris$Species_id <- with(iris, ifelse(Species == 'setosa', 1,
                   ifelse(Species == 'versicolor', 2, 
                          ifelse(Species == 'virginica', 3, NA))))
 
+```
+
+
+``` {r}
+#install.packages("FSelector")
+library(FSelector)
+
+subset <- cfs(Species~., iris)
+f <- as.simple.formula(subset, "Species")
+print(f)
+```
+
+http://stackoverflow.com/questions/18589018/reduce-dataset-with-fselector-in-r
+
+``` {r}
+data(iris)
+weights <- relief(Species~., iris, neighbours.count = 5, sample.size = 20)
+subset <- cutoff.k(weights, 2)
+f <- as.simple.formula(subset, "Species")
+
+newdata <-  iris[,cutoff.k(weights, 2)] 
 ```
