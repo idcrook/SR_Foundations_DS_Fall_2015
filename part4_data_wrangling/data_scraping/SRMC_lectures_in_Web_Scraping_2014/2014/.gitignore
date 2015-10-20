@@ -1,0 +1,7 @@
+*-cache
+*-figure
+*.html
+*.md
+*.pdf
+*.png
+*.js
