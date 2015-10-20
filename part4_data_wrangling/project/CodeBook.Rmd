@@ -2,7 +2,10 @@
 title: "Data Wrangling Project"
 author: "David Crook"
 date: "October 20, 2015"
-output: html_document
+output: 
+  html_document:
+    toc: true
+    theme: united
 ---
 
 ***
@@ -13,10 +16,10 @@ output: html_document
 setwd("~/projects/Classes/FoundationsOfDataScience_sliderule/github/part4_data_wrangling/project")
 
 library(ggplot2)
-library(psych)
+suppressMessages(library(psych))
 library(plyr)
-library(dplyr)
-library(stringr)
+suppressMessages(library(dplyr))
+#library(stringr)
 
 ```
 
@@ -182,11 +185,11 @@ tidy_feature_measurements <- feature_measurements %>%
 ##### Start of some EDA
 
 ``` {r Start of some EDA}
-describe(tidy_feature_measurements)
+#describe(tidy_feature_measurements)
+
 ggplot(data = subset(tidy_feature_measurements, activity == 'LAYING'),
        aes(x = tidy_feature_measurements$"tBodyGyro-mean()-X", y = tidy_feature_measurements$"tBodyGyro-mean()-Y") ) +
   geom_point()
-
 
 ggplot(data = tidy_feature_measurements,
        aes(x = tidy_feature_measurements$"tGravityAcc-std()-Y")) +
