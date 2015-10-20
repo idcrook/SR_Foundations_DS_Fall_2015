@@ -24,6 +24,7 @@ rm(flights)
 ```{r}
 # load packages
 suppressMessages(library(dplyr))
+#install.packages("nycflights13")
 library(nycflights13)
 
 # print the flights dataset from nycflights13

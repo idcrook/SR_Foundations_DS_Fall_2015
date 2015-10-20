@@ -29,6 +29,7 @@ Note: There is a 40-minute [video tutorial](https://www.youtube.com/watch?v=jWjq
 * hflights is flights departing from two Houston airports in 2011
 
 ```{r}
+setwd("~/projects/Classes/FoundationsOfDataScience_sliderule/github/part4_data_wrangling/part4.1_dplyr")
 # load packages
 suppressMessages(library(dplyr))
 #install.packages("hflights")
@@ -318,6 +319,14 @@ glimpse(flights)
     * Instructions for creating this database are in the [databases vignette](http://cran.r-project.org/web/packages/dplyr/vignettes/databases.html)
 
 ```{r}
+
+# https://cran.r-project.org/web/packages/dplyr/vignettes/databases.html
+##install.packages("RSQLite")
+
+##library(hflights)
+##my_db <- src_sqlite("my_db.sqlite3", create = TRUE)
+##flights_sqlite <- copy_to(my_db, hflights, temporary = FALSE, indexes = list(c("Year", "Month", "DayOfMonth"), "UniqueCarrier", "TailNum"))
+
 # connect to an SQLite database containing the hflights data
 my_db <- src_sqlite("my_db.sqlite3")
 
