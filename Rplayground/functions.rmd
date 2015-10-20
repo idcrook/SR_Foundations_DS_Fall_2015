@@ -1,0 +1,24 @@
+---
+title: "exploring functions"
+output:
+  html_document:
+    toc: true
+    theme: united
+---
+
+
+*** 
+
+### rate of increase illustration
+
+from http://socviz.github.io/soc880/snippets/curve-banking.html
+
+
+```{r}
+x <- seq(0, 8, 0.001)
+y <- x^4
+y1 <- (x^4) + 400
+
+plot(x, y, type="l")
+lines(x, y1, type="l")
+```
