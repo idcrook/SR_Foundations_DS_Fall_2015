@@ -1,0 +1,100 @@
+---
+title: "rvest"
+author: "David Crook"
+date: "October 19, 2015"
+output: html_document
+---
+
+
+***
+
+```{r}
+summary(cars)
+```
+
+
+```{r, echo=FALSE}
+plot(cars)
+```
+
+***
+
+## Setup
+
+``` {r Steup}
+setwd("~/projects/Classes/FoundationsOfDataScience_sliderule/github/part4_data_wrangling/data_scraping/rvest")
+
+#install.packages("rvest")
+library(rvest)
+
+```
+
+
+***
+
+## scrape the lego movie
+
+
+``` {r}
+lego_movie <- read_html("http://www.imdb.com/title/tt1490017/")
+
+lego_movie %>% 
+  html_node("strong span") %>%
+  html_text() %>%
+  as.numeric()
+
+#> [1] 7.8
+
+```
+
+
+### more extractions
+
+``` {r}
+lego_movie %>%
+  html_nodes("#titleCast .itemprop span") %>%
+  html_text()
+
+```
+
+``` {r}
+
+
+```
+
+> The titles and authors of recent message board postings are stored in a the third table on the 
+> page. We can use html_node() and [[ to find it, then coerce it to a data frame with html_table():
+
+
+``` {r}
+lego_movie %>%
+  html_nodes("table") %>%
+  .[[3]] %>%
+  html_table()
+```
+  
+  
+### IMDB: Alison Brie
+
+``` {r eval=F}
+alison_brie <- read_html("http://www.imdb.com/name/nm1555340/")
+
+alison_brie %>%
+  html_nodes("#filmography .filmo-row b") %>%
+  html_text()
+
+```
+
+### Elizabeth Banks
+
+http://www.imdb.com/name/nm0006969/
+
+``` {r eval=F}
+elizabeth_banks <- read_html("http://www.imdb.com/name/nm0006969/")
+
+elizabeth_banks %>%
+  html_nodes("#filmography .filmo-row b") %>%
+  html_text()
+
+```
+
