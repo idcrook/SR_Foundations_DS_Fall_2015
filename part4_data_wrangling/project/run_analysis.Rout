@@ -222,6 +222,9 @@ Variables not shown: tBodyAcc-mean()-Z (dbl), tBodyAcc-std()-X (dbl),
   fBodyBodyGyroMag-meanFreq() (dbl), fBodyBodyGyroJerkMag-mean() (dbl),
   fBodyBodyGyroJerkMag-std() (dbl), fBodyBodyGyroJerkMag-meanFreq() (dbl)
 > 
+> # save to a file
+> saveRDS(tidy_feature_measurements, file="tidydata.Rda")
+> 
 > proc.time()
    user  system elapsed 
- 19.146   0.363  19.689 
+ 19.327   0.352  19.813 

@@ -168,6 +168,8 @@ train_measurements_subset <- train_feature_measurements[,columns]
 feature_measurements <- rbind(train_measurements_subset, 
                               test_measurements_subset)
 dim(feature_measurements)
+
+
 ```
 
 
@@ -180,6 +182,10 @@ tidy_feature_measurements <- feature_measurements %>%
   summarise_each(funs(mean)) %>%
   ungroup() %>% 
   arrange()
+
+# save to a file
+saveRDS(tidy_feature_measurements, file="tidydata.Rda")
+
 ```
 
 ##### Start of some EDA

@@ -127,3 +127,6 @@ tidy_feature_measurements <- feature_measurements %>%
   arrange()
 
 head(tidy_feature_measurements, 6*3)
+
+# save to a file
+saveRDS(tidy_feature_measurements, file="tidydata.Rda")
