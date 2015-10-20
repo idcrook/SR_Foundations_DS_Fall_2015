@@ -4,6 +4,13 @@
 
 - http://archive.ics.uci.edu/ml/datasets/Human+Activity+Recognition+Using+Smartphones
 
+## Submitted
+
+
+- [tidy data set [format = .Rda]](https://github.com/dpcrook/SR_Foundations_DS_Fall_2015/blob/master/part4_data_wrangling/project/tidydata.Rda?raw=true)
+- [github repos path](https://github.com/dpcrook/SR_Foundations_DS_Fall_2015/tree/master/part4_data_wrangling/project)
+- [CodeBook [format = .Rmd]](https://github.com/dpcrook/SR_Foundations_DS_Fall_2015/blob/master/part4_data_wrangling/project/CodeBook.Rmd)  output: [CodeBook.html](http://github.crookster.org/SR_Foundations_DS_Fall_2015/part4_data_wrangling/project/CodeBook.html) 
+
 
 ## File description
 
@@ -32,4 +39,5 @@ Notes and development R code is found in the `CodeBook.Rmd` file.
 ``` {bash}
 $ R CMD BATCH ./run_analysis.R
 ```
+
 
