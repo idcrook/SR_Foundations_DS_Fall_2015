@@ -13,6 +13,10 @@ output: html_document
 setwd("~/projects/Classes/FoundationsOfDataScience_sliderule/github/part4_data_wrangling/project")
 
 library(ggplot2)
+library(psych)
+library(plyr)
+library(dplyr)
+library(stringr)
 
 ```
 
@@ -22,8 +26,154 @@ library(ggplot2)
 
 You should create one R script called `run_analysis.R` that does the following.
 
-1. Merges the training and the test sets to create one data set.
-1. Extracts only the measurements on the mean and standard deviation for each measurement.
-1. Uses descriptive activity names to name the activities in the data set
-1. Appropriately labels the data set with descriptive variable names.
+1. ~~Merges the training and the test sets to create one data set.~~
+1. ~~Extracts only the measurements on the mean and standard deviation for each measurement.~~
+1. ~~Uses descriptive activity names to name the activities in the data set~~
+1. ~~Appropriately labels the data set with descriptive variable names.~~
 1. From the data set in step 4, creates a second, independent tidy data set with the average of each variable for each activity and each subject.
+
+ 
+*** 
+
+### Data import
+
+``` {r data_import, echo=FALSE}
+# read in features and activity labels
+features   <- read.csv ("UCI_HAR_Dataset/features.txt", sep = ' ', header = FALSE)
+colnames(features) <- c("feature_column",  "feature_name")
+str(features)
+# 'data.frame':	561 obs. of  2 variables:
+# $ V1: int  1 2 3 4 5 6 7 8 9 10 ...
+#  $ V2: Factor w/ 477 levels "angle(tBodyAccJerkMean),gravityMean)",..: 243 244 245 250 251 252 237 238 239 240 ...
+
+act_labels <- read.csv ("UCI_HAR_Dataset/activity_labels.txt", sep = ' ', header = FALSE)
+colnames(act_labels) <- c("activity_class_encoding",  "activity_name")
+act_labels$activity_class_encoding <- factor(act_labels$activity_class_encoding)
+act_labels
+
+# -----------------
+# test set
+# -----------------
+# $ wc -l test/X_test.txt test/subject_test.txt test/y_test.txt
+#     2947 test/X_test.txt
+#     2947 test/subject_test.txt
+#     2947 test/y_test.txt
+    
+test_act_labels  <- read.csv ("UCI_HAR_Dataset/test/y_test.txt", sep = ' ', header = FALSE)
+dim(test_act_labels)
+
+test_subj_labels  <- read.csv ("UCI_HAR_Dataset/test/subject_test.txt", sep = ' ', header = FALSE)
+dim(test_subj_labels)
+
+test_feature_measurements <- read.csv ("UCI_HAR_Dataset/test/X_test.txt", sep = '', header = FALSE)
+dim(test_feature_measurements)
+
+# describe(test_feature_measurements)
+
+# check that activity levels have same number of observations as measurements
+print(ifelse((dim(test_feature_measurements)[1] != dim(test_act_labels)[1]) &
+             (dim(test_feature_measurements)[1] != dim(test_subj_labels)[1]),
+             "Error: length mismatch in test data",
+             "Good: length match in test data"))
+
+# -----------------
+# train set
+# -----------------
+# wc -l train/X_train.txt train/subject_train.txt train/y_train.txt
+#     7352 train/X_train.txt
+#     7352 train/subject_train.txt
+#     7352 train/y_train.txt    
+    
+train_act_labels  <- read.csv ("UCI_HAR_Dataset/train/y_train.txt", sep = ' ', header = FALSE)
+dim(train_act_labels)
+
+train_subj_labels  <- read.csv ("UCI_HAR_Dataset/train/subject_train.txt", sep = ' ', header = FALSE)
+dim(train_subj_labels)
+
+train_feature_measurements <- read.csv ("UCI_HAR_Dataset/train/X_train.txt", sep = '', header = FALSE)
+dim(train_feature_measurements)
+# describe(train_feature_measurements)
+
+# check that activity levels have same number of observations as measurements
+print(ifelse((dim(train_feature_measurements)[1] != dim(train_act_labels)[1]) &
+             (dim(train_feature_measurements)[1] != dim(train_subj_labels)[1]),
+             "Error: length mismatch in train data",
+             "Good: length match in train data"))
+```
+
+
+### Data transform
+
+#### Update column names and add activity class and subject ID
+
+``` {r}
+
+# update the column names
+colnames(test_act_labels) <- c("activity_class_encoding")
+colnames(test_subj_labels) <- c("subject_id")
+colnames(test_feature_measurements) = features$feature_name
+
+colnames(train_act_labels) <- c("activity_class_encoding")
+colnames(train_subj_labels) <- c("subject_id")
+colnames(train_feature_measurements) = features$feature_name
+
+# add activity names
+test_feature_measurements$activity <- factor(test_act_labels$activity_class_encoding)
+levels(test_feature_measurements$activity) <- act_labels$activity_name
+
+train_feature_measurements$activity <- factor(train_act_labels$activity_class_encoding)
+levels(train_feature_measurements$activity) <- act_labels$activity_name
+
+# add subject ID (separate train id from test id)
+test_feature_measurements$subjectid <- factor(test_subj_labels$subject_id)
+train_feature_measurements$subjectid <- factor(train_subj_labels$subject_id)
+``` 
+
+#### extracts only the measurements on the mean and standard deviation
+
+``` {r}
+
+## use dplyr select to get a subset
+#test_measurements_filtered <- select(test_feature_measurements, matches("-std"))
+## Error: found duplicated column name:  
+
+#columns <- grep("-(std|mean)", colnames(test_feature_measurements), value=TRUE)
+#columns <- grep("-(std|mean)", colnames(test_feature_measurements), value=FALSE)
+#select(test_feature_measurements, columns)
+
+getDesiredColumnIndices <- function (df) {
+  columns = grep("-(std|mean)", colnames(df), value=FALSE)
+  columns = c(columns, grep("activity", colnames(df), value=FALSE))
+  columns = c(columns, grep("subjectid", colnames(df), value=FALSE))
+  columns
+}
+
+columns <- getDesiredColumnIndices(test_feature_measurements)
+test_measurements_subset <- test_feature_measurements[,columns]
+
+columns <- getDesiredColumnIndices(train_feature_measurements)
+train_measurements_subset <- train_feature_measurements[,columns]
+
+```
+
+
+#### Merges the training and the test sets to create one data set.
+
+
+``` {r}
+# now merge the data frames
+feature_measurements <- rbind(train_measurements_subset, 
+                              test_measurements_subset)
+dim(feature_measurements)
+```
+
+
+
+#### Create derived data set with the average of each variable for each activity and each subject.
+
+``` {r}
+
+
+```
+
+
