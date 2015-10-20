@@ -186,6 +186,9 @@ tidy_feature_measurements <- feature_measurements %>%
 # save to a file
 saveRDS(tidy_feature_measurements, file="tidydata.Rda")
 
+## to load
+#td <- readRDS(file="tidydata.Rda")
+
 ```
 
 ##### Start of some EDA
