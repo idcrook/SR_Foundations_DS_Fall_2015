@@ -30,7 +30,7 @@ You should create one R script called `run_analysis.R` that does the following.
 1. ~~Extracts only the measurements on the mean and standard deviation for each measurement.~~
 1. ~~Uses descriptive activity names to name the activities in the data set~~
 1. ~~Appropriately labels the data set with descriptive variable names.~~
-1. From the data set in step 4, creates a second, independent tidy data set with the average of each variable for each activity and each subject.
+1. ~~From the data set in step 4, creates a second, independent tidy data set with the average of each variable for each activity and each subject.~~
 
  
 *** 
@@ -172,7 +172,25 @@ dim(feature_measurements)
 #### Create derived data set with the average of each variable for each activity and each subject.
 
 ``` {r}
+tidy_feature_measurements <- feature_measurements %>%
+  group_by(subjectid, activity) %>%
+  summarise_each(funs(mean)) %>%
+  ungroup() %>% 
+  arrange()
+```
 
+##### Start of some EDA
+
+``` {r Start of some EDA}
+describe(tidy_feature_measurements)
+ggplot(data = subset(tidy_feature_measurements, activity == 'LAYING'),
+       aes(x = tidy_feature_measurements$"tBodyGyro-mean()-X", y = tidy_feature_measurements$"tBodyGyro-mean()-Y") ) +
+  geom_point()
+
+
+ggplot(data = tidy_feature_measurements,
+       aes(x = tidy_feature_measurements$"tGravityAcc-std()-Y")) +
+  geom_histogram()
 
 ```
 
