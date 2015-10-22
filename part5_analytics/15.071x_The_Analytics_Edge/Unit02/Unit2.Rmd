@@ -1,0 +1,366 @@
+
+
+*** 
+``` {r}
+setwd("~/projects/Classes/FoundationsOfDataScience_sliderule/github/part5_analytics/15.071x_The_Analytics_Edge/Unit02")
+
+```
+
+## Unit 2
+
+***
+
+``` {r}
+
+
+xs <- c(0, 1, 1)
+ys <- c(2, 2, 8)
+
+baseline1 <- mean(ys)
+
+pred1 <- function (x) {
+  3*x + 2
+}
+
+sse1 <- function (x, y) {
+  ypred = pred1(x)
+  (ypred - y) ^2
+}
+
+
+sst1 <- function (x, y) {
+  ypred = baseline1
+  (ypred - y) ^2
+}
+
+sse1(0, 2)
+sse <- sse1(0, 2) + sse1(1, 2) + sse1(1, 8)
+sse 
+
+sst1(0, 2)
+sst <- sst1(0, 2) + sst1(1, 2) + sst1(1, 8)
+sst
+
+r2 <- 1 - (sse/sst)
+r2
+
+```
+
+***
+
+``` {r}
+
+wine <- read.csv("wine.csv")
+str(wine)
+summary(wine)
+
+model1 = lm(Price ~ AGST, data = wine)
+summary(model1)
+
+model1$residuals
+SSE = sum(model1$residuals ^ 2)
+SSE
+
+model2 = lm(Price ~ AGST + HarvestRain, data = wine)
+summary(model2)
+SSE = sum(model2$residuals ^ 2)
+SSE
+
+model3 = lm(Price ~ AGST + HarvestRain + WinterRain + Age + FrancePop, data = wine)
+summary(model3)
+SSE = sum(model3$residuals ^ 2)
+SSE
+
+
+```
+
+***
+
+``` {r}
+
+wine <- read.csv("wine.csv")
+
+model1a <- lm(Price ~ HarvestRain + WinterRain, data = wine)
+summary(model1a)
+
+cor(wine$HarvestRain, wine$WinterRain)
+
+```
+
+***
+
+``` {r}
+
+model4 = lm(Price ~ AGST + HarvestRain + WinterRain + Age, data = wine)
+summary(model4)
+SSE = sum(model4$residuals ^ 2)
+SSE
+
+
+
+
+```
+
+***
+
+``` {r}
+
+cor(wine$WinterRain, wine$Price)
+cor(wine$Age, wine$FrancePop)
+cor(wine)
+
+model5 = lm(Price ~ AGST + HarvestRain + WinterRain, data = wine)
+summary(model5)
+SSE = sum(model5$residuals ^ 2)
+SSE
+
+
+
+
+```
+
+
+``` {r}
+
+wineTest <- read.csv("wine_test.csv")
+str(wineTest)
+
+predictTest = predict(model4, newdata = wineTest)
+predictTest
+
+SSE = sum((wineTest$Price - predictTest)^2)
+SST = sum((wineTest$Price - mean(wine$Price))^2) 
+
+1 - (SSE/SST)          
+          
+```
+
+
+***
+
+## Moneyball
+
+
+``` {r}
+baseball <- read.csv("baseball.csv")
+
+moneyball = subset(baseball, Year < 2002)
+RunsReg = lm(RS ~ OBP + SLG, data=moneyball)
+summary(RunsReg)
+
+# Estimate Std. Error t value Pr(>|t|)    
+# (Intercept)  -804.63      18.92  -42.53   <2e-16 ***
+#   OBP          2737.77      90.68   30.19   <2e-16 ***
+#   SLG          1584.91      42.16   37.60   <2e-16 ***
+
+playerName = c("Eric Chavez","Jeremy Giambi","Frank Menechino","Greg Myers","Carlos Pena")
+playerOBP = c(0.338, 0.391, 0.369, 0.313, 0.361)
+playerSLG = c(0.540, 0.450, 0.374, 0.447, 0.500)
+playerSalary = c(1400000, 1065000, 295000 , 800000 , 300000)
+
+players = data.frame(playerName, playerOBP, playerSLG, playerSalary)
+
+players$RS = with(players, playerOBP * 2737.77 + playerSLG * 1584.91 -804.63 )
+players$RSpD = with(players, RS / playerSalary * 10000)
+
+str(players)
+
+1500000 - sum(playerSalary[c(2,5)]) 
+playerName[c(2,5)]
+```
+
+
+``` {r}
+
+teamRank = c(1,2,3,3,4,4,4,4,5,5)
+
+wins2012 = c(94, 88, 95, 88, 93, 94, 98, 97, 93, 94)
+wins2013 = c(97, 97, 92, 93, 92, 96, 94, 96, 92, 90)
+
+cor(teamRank, wins2012)
+cor(teamRank, wins2013)
+
+
+  
+
+```
+
+***
+
+``` {r}
+data(state)
+
+statedata = cbind(data.frame(state.x77), state.abb, state.area, state.center,  state.division, state.name, state.region)
+
+str(statedata)
+
+# 1.1
+
+plot(statedata$x, statedata$y)
+
+# 1.2
+
+tapply(statedata$HS.Grad, statedata$state.region, mean)
+
+# 1.3 
+
+boxplot(statedata$Murder ~ statedata$state.region)
+
+# 1.4
+
+summary((subset(statedata, statedata$state.region == 'Northeast'))$Murder)
+
+with(subset(statedata, statedata$state.region == 'Northeast'),
+     table(state.abb, Murder))
+
+#NortheastData = subset(statedata, state.region == "Northeast")
+#table(NortheastData$Murder, NortheastData$state.abb)
+
+# 2.1
+
+lifeExp_pred = lm(Life.Exp ~ Population + Income + Illiteracy + Murder +  HS.Grad + Frost + Area, data=statedata)
+
+summary(lifeExp_pred)
+
+# 2.2
+
+# 2.3
+
+plot(statedata$Income, statedata$Life.Exp)
+
+# 3.1
+lifeExp_pred = lm(Life.Exp ~ Population + Income + Illiteracy + Murder +  HS.Grad + Frost + Area, data=statedata)
+
+# removed in turn: Area (p=0.9649), Illiteracy(p=0.9340), Income(p=0.9153)
+lifeExp2 = lm(Life.Exp ~ Population + Murder +  HS.Grad + Frost, data=(statedata)
+summary(lifeExp2)
+
+# 3.2
+summary(lifeExp_pred)
+summary(lifeExp2)
+
+# 3.3
+
+predict(lifeExp2)
+sort(predict(lifeExp2))
+
+which.min(statedata$Life.Exp)
+statedata$state.name[40]
+          
+# 3.4
+sort(predict(lifeExp2))
+
+which.max(statedata$Life.Exp)
+statedata$state.name[11]
+
+
+# 3.5
+
+sort(lifeExp2$residuals ^ 2)
+```
+
+***
+
+## forecasting elantra sales
+
+``` {r}
+
+elantra = read.csv("elantra.csv")
+
+elantraTrain = subset(elantra, Year <= 2012)
+elantraTest = subset(elantra, Year > 2012)
+
+# 1.1
+str(elantraTrain)
+str(elantraTest)
+
+# 2.1
+
+reg1 <- lm(ElantraSales ~ Unemployment + CPI_all + CPI_energy + Queries, data = elantraTrain)
+summary(reg1)
+
+# 2.2
+
+
+# 2.3
+
+
+
+
+# 3.1
+regMonthly <- lm(ElantraSales ~ Unemployment + CPI_all + CPI_energy + Queries + Month, data = elantraTrain)
+summary(regMonthly)
+# 3.2
+# 3.3
+
+str(elantraTrain)
+
+# Coefficients:
+#               Estimate Std. Error t value Pr(>|t|)  
+# (Intercept)  148330.49  195373.51   0.759   0.4536  
+# Unemployment  -4137.28    4008.56  -1.032   0.3103  
+# CPI_all        -517.99     808.26  -0.641   0.5265  
+# CPI_energy       54.18     114.08   0.475   0.6382  
+# Queries          21.19      11.98   1.769   0.0871 .
+# Month           110.69     191.66   0.578   0.5679  
+
+# Jan to Mar
+110.69 * (3 - 1)
+
+
+# Jan to May
+110.69 * (5 - 1)
+
+# 3.4
+# 4.1
+
+elantraTrain$fMonth <- as.factor(elantraTrain$Month)
+elantraTest$fMonth <- as.factor(elantraTest$Month)
+
+regMonthly2 <- lm(ElantraSales ~ Unemployment + CPI_all + CPI_energy + Queries + fMonth, data = elantraTrain)
+summary(regMonthly2)
+
+# 4.2
+# 5.1
+
+cor(elantraTrain)
+cor(elantraTrain[,unlist(lapply(elantraTrain, is.numeric))])
+
+# 5.2
+# 6.1
+
+regMonthly3 <- lm(ElantraSales ~ Unemployment + CPI_all + CPI_energy + Queries + fMonth, data = elantraTrain)
+summary(regMonthly3)
+
+# removed in turn Queries(Pr=0.716598)
+regMonthly3r <- lm(ElantraSales ~ Unemployment + CPI_all + CPI_energy + fMonth, data = elantraTrain)
+summary(regMonthly3r)
+
+# 6.2
+
+predictTest = predict(regMonthly3r, newdata = elantraTest)
+#summary(predictTest)
+#predictTest
+
+SSE = sum((elantraTest$ElantraSales - predictTest)^2)
+SSE
+
+# 6.3
+ mean(elantraTrain$ElantraSales)
+
+# 6.4
+ 
+SST = sum((elantraTest$ElantraSales - mean(elantraTrain$ElantraSales))^2) 
+1 - (SSE/SST)
+
+# 6.5
+max( abs(regMonthly3r$residuals))
+max(abs(predictTest - elantraTest$ElantraSales))
+
+# 6.6
+which.max(abs(predictTest - elantraTest$ElantraSales))
+# row 5
+elantraTest[5,]
+
+```
+
