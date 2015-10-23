@@ -1,0 +1,286 @@
+
+
+*** 
+``` {r}
+setwd("~/projects/Classes/FoundationsOfDataScience_sliderule/github/part5_analytics/15.071x_The_Analytics_Edge/Unit03_Logistic_Regression")
+
+```
+
+## Unit 3
+
+***
+
+### Logit, Odds and Logistic equation
+
+
+
+``` {r}
+
+logit <- (-1.5) + (3*1) + (-0.5*5)
+logit
+exp(logit)
+
+1 / ( 1+ exp(-logit))
+
+```
+
+
+## QQ 
+
+``` {r}
+quality = read.csv("quality.csv")
+
+#install.packages("caTools")
+library(caTools)
+
+set.seed(88)
+
+split = sample.split(quality$PoorCare, SplitRatio = 0.75)
+
+qualityTrain = subset(quality, split == TRUE)
+
+qualityTest = subset(quality, split == FALSE)
+
+
+# 
+QualityLog2 = glm(PoorCare ~ StartedOnCombination + ProviderCount, data=qualityTrain, family=binomial)
+summary(QualityLog2)
+
+
+```
+
+
+***
+
+``` {r}
+
+# Confusion Matrix #1:
+# 
+#  	Predicted = 0	Predicted = 1
+# Actual = 0	15	10
+# Actual = 1	5	20
+#  
+# 
+# Confusion Matrix #2:
+# 
+#  	Predicted = 0	Predicted = 1
+# Actual = 0	20	5
+# Actual = 1	10	15
+
+#
+# TN | FP
+# ----------
+# FN | TP
+#
+
+# sensitivity  TP / (TP + FN)
+# specificity  TN / (TN + FP)
+
+# CM1 sensitivity and specificity
+cm1_e <- 20 / (20 + 5)
+cm1_e
+
+cm1_p <- 15 / (15 + 10)
+cm1_p
+
+# CM2 sensitivity and specificity
+cm2_e <- 15 / (15 + 10)
+cm2_e
+
+cm2_p <- 20 / (20 + 5)
+cm2_p
+
+
+
+
+
+```
+
+
+``` {r}
+quality = read.csv("quality.csv")
+
+#install.packages("caTools")
+library(caTools)
+
+set.seed(88)
+
+split = sample.split(quality$PoorCare, SplitRatio = 0.75)
+
+qualityTrain = subset(quality, split == TRUE)
+qualityTest = subset(quality, split == FALSE)
+
+# Randomly split data
+set.seed(88)
+split = sample.split(quality$PoorCare, SplitRatio = 0.75)
+split
+
+# ## use sample to split on a continuous outcome
+# spl = sample(1:nrow(data), size=0.7 * nrow(data))
+# train = data[spl,]
+# test = data[-spl,]
+
+# Create training and testing sets
+qualityTrain = subset(quality, split == TRUE)
+qualityTest = subset(quality, split == FALSE)
+
+nrow(qualityTrain)
+nrow(qualityTest)
+
+# Logistic Regression Model
+QualityLog = glm(PoorCare ~ OfficeVisits + Narcotics, data=qualityTrain, family=binomial)
+summary(QualityLog)
+
+# Make predictions on training set 
+predictTrain = predict(QualityLog, type="response")
+# type=response we want probabilities
+
+# Analyze predictions
+summary(predictTrain)
+tapply(predictTrain, qualityTrain$PoorCare, mean)
+
+
+predictTest = predict(QualityLog, type="response", newdata=qualityTest)
+ROCRpredTest = prediction(predictTest, qualityTest$PoorCare)
+
+auc = as.numeric(performance(ROCRpredTest, "auc")@y.values)
+auc
+```
+
+***
+
+## Framingham
+
+``` {r}
+
+# FALSE	TRUE
+# 0	1069	6
+# 1	187	11
+
+cm_e <- 11 / (187 + 11)
+cm_e
+
+cm_p <- 1069 / (6 + 1069)
+cm_p
+
+```
+
+
+*** 
+
+## Baseball
+
+``` {r}
+baseball <- read.csv("baseball.csv")
+
+# 1.1
+str(baseball)
+
+
+# 1.2
+length(table(baseball$Year))
+
+# 1.3 filter out to keep only playoff teams
+subset(baseball,  !is.na(RankPlayoffs))
+baseball <- subset(baseball,  !is.na(RankPlayoffs))
+nrow(baseball)
+
+# 1.4
+table(baseball$Year, baseball$Playoffs)
+table(baseball$Year)
+
+# 2.1
+PlayoffTable = table(baseball$Year)
+PlayoffTable
+
+names(PlayoffTable)
+str(PlayoffTable)
+str(names(PlayoffTable))
+
+# 2.2
+PlayoffTable[c("1990", "2001")]
+
+# 2.3
+baseball$NumCompetitors = PlayoffTable[baseball$Year]
+ 
+# 2.4
+table(baseball$NumCompetitors)
+ 
+# 3.1
+baseball$WorldSeries = as.numeric(baseball$RankPlayoffs == 1)
+table(baseball$WorldSeries)
+
+# 3.2
+baseball <- read.csv("baseball.csv")
+baseball$WorldSeries = as.numeric(baseball$RankPlayoffs == 1)
+
+YearLog = glm(WorldSeries ~ Year , data=baseball, family=binomial)
+summary(YearLog)
+RSLog = glm(WorldSeries ~ RS , data=baseball, family=binomial)
+summary(RSLog)
+RALog = glm(WorldSeries ~ RA , data=baseball, family=binomial)
+summary(RALog)
+WLog = glm(WorldSeries ~ W , data=baseball, family=binomial)
+summary(WLog)
+OBPLog = glm(WorldSeries ~  OBP, data=baseball, family=binomial)
+summary(OBPLog)
+SLGLog = glm(WorldSeries ~  SLG, data=baseball, family=binomial)
+summary(SLGLog)
+BALog = glm(WorldSeries ~  BA, data=baseball, family=binomial)
+summary(BALog)
+RankSeasonLog = glm(WorldSeries ~ RankSeason , data=baseball, family=binomial)
+summary(RankSeasonLog)
+OOBPLog = glm(WorldSeries ~ OOBP, data=baseball, family=binomial)
+summary(OOBPLog)
+OSLGLog = glm(WorldSeries ~ OSLG, data=baseball, family=binomial)
+summary(OSLGLog)
+NumCompetitorsLog = glm(WorldSeries ~ NumCompetitors, data=baseball, family=binomial)
+summary(NumCompetitorsLog)
+LeagueLog = glm(WorldSeries ~  League, data=baseball, family=binomial)
+summary(LeagueLog)
+
+# 4.1
+CombinedLog = glm(WorldSeries ~ Year + RA + RankSeason + NumCompetitors, data=baseball, family=binomial)
+summary(CombinedLog)
+
+# 4.2
+cor(baseball[c("Year", "RA", "RankSeason", "NumCompetitors")])
+
+
+# 4.3
+summary(YearLog)
+# AIC: 232.35
+summary(RALog)
+# AIC: 237.88
+summary(RankSeasonLog)
+# AIC: 238.75
+summary(NumCompetitorsLog)
+# AIC: 230.96
+
+YearRALog = glm(WorldSeries ~ Year + RA , data=baseball, family=binomial)
+YearRankSeasonLog = glm(WorldSeries ~ Year + RankSeason , data=baseball, family=binomial)
+YearNCLog = glm(WorldSeries ~ Year + NumCompetitors , data=baseball, family=binomial)
+summary(YearRALog)
+# AIC: 233.88
+summary(YearRankSeasonLog)
+# AIC: 233.55
+summary(YearNCLog)
+# AIC: 232.9
+
+
+RARankSeasonLog = glm(WorldSeries ~ RA + RankSeason , data=baseball, family=binomial)
+RANumCompetitorsLog = glm(WorldSeries ~ RA + NumCompetitors , data=baseball, family=binomial)
+RankSeasonNCLog = glm(WorldSeries ~ RankSeason + NumCompetitors , data=baseball, family=binomial)
+
+
+summary(RARankSeasonLog)
+# AIC: 238.22
+summary(RANumCompetitorsLog)
+# AIC: 232.74
+summary(RankSeasonNCLog)
+# AIC: 232.52
+
+
+
+ 
+```
