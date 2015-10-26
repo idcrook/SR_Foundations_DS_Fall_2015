@@ -1,0 +1,21 @@
+
+
+*** 
+``` {r}
+setwd("~/projects/Classes/FoundationsOfDataScience_sliderule/github/part5_analytics/15.071x_The_Analytics_Edge/Unit05_Text_Analytics")
+
+```
+
+## Unit 4
+
+Text Analytics
+
+***
+
+### 
+
+
+``` {r}
+
+
+```
