@@ -1,0 +1,50 @@
+---
+title: "CrossValidation in R"
+author: "David Crook"
+date: "October 26, 2015"
+output: html_document
+---
+
+
+```{r}
+#install.packages("ISLR")
+library(ISLR)
+library(boot)
+
+### LOOCV approach
+set.seed(1)
+
+attach(Auto)
+
+model = glm(mpg ~ horsepower, data = Auto)
+
+MSE_LOOCV = cv.glm(Auto, model)
+MSE_LOOCV
+MSE_LOOCV$delta[1]
+
+MSE_LOOCV = cv.glm(Auto, model)$delta[1]
+MSE_LOOCV
+
+MSE_LOOCV = NULL
+for(i in 1:10) {
+  model = glm(mpg ~ poly(horsepower, i), data = Auto)
+  MSE_LOOCV[i] = cv.glm(Auto, model)$delta[1]
+}
+
+MSE_LOOCV
+
+
+### k-fold CV
+
+MSE_k10fold_cv = NULL
+for(i in 1:10) {
+  model = glm(mpg ~ poly(horsepower, i), data = Auto)
+  MSE_k10fold_cv[i] = cv.glm(Auto, model, K = 10)$delta[1]
+}
+
+MSE_k10fold_cv
+
+MSE_LOOCV - MSE_k10fold_cv
+
+```
+
