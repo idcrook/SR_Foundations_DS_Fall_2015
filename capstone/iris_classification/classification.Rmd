@@ -1,0 +1,72 @@
+---
+title: "iris - classification"
+output: html_document
+---
+
+
+### Some setup
+
+```{r}
+setwd("~/projects/Classes/FoundationsOfDataScience_sliderule/github/capstone/iris_classification")
+
+library(ggplot2)
+# load packages
+suppressMessages(library(dplyr))
+
+# explore data
+data("iris")
+head(iris)
+```
+
+***
+
+
+#### some dplyr summaries and observations
+
+
+``` {r}
+
+glimpse(iris)
+
+iris %>%
+        group_by(Species) %>%
+        summarise(avg = mean(Sepal.Width)) %>%
+        arrange(avg)
+
+summarise(iris, avg = mean(Sepal.Length))
+summarise_each(iris, funs(mean))
+
+summarise_each(select(iris, -Species), funs(mean))
+```
+
+#### some new variables
+
+``` {r}
+iris <- mutate(iris, sepal = Sepal.Length + Sepal.Width)
+iris <- mutate(iris, sepal2 = Sepal.Length - Sepal.Width)
+
+```
+
+### FSelector
+
+
+``` {r}
+#install.packages("FSelector")
+library(FSelector)
+
+subset <- cfs(Species~., iris)
+f <- as.simple.formula(subset, "Species")
+print(f)
+```
+
+http://stackoverflow.com/questions/18589018/reduce-dataset-with-fselector-in-r
+
+``` {r}
+data(iris)
+weights <- relief(Species~., iris, neighbours.count = 5, sample.size = 20)
+subset <- cutoff.k(weights, 2)
+f <- as.simple.formula(subset, "Species")
+
+newdata <-  iris[,cutoff.k(weights, 2)] 
+glimpse(newdata)
+```
