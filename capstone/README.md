@@ -8,6 +8,6 @@ Placeholder for capstone project in Foundations of Data Science (sliderule)
 - `README.md`
 - `ProjectIdeas.md` - collection of capstone project ideas
 - `iris_classification/` - classification problem
-- TBD `Proposal.md` - 
-- TBD `MilestoneReport.md` -
+- `Proposal.md` - Submitted
+- `MilestoneReport.md` - Outline
 - TBD `FinalDraft.md`
