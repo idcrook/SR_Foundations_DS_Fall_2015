@@ -1,0 +1,95 @@
+---
+title: "EDA for credit score data - Kaggle GiveMeSomeCredit"
+author: "David Crook"
+date: "November 5, 2015"
+output: html_document
+---
+
+## Setup
+
+```{r Setup}
+setwd("~/projects/Classes/FoundationsOfDataScience_sliderule/github/capstone/GiveMeSomeCredit")
+
+
+suppressMessages(library(dplyr)) # summarise
+library(mice)
+library(caret)
+
+```
+
+## Start exploring the data set
+
+```{r Structure of data}
+cs <- read.csv("cs-training.csv")
+
+str(cs)
+# can drop the 'X' column, as it is just the observation number in sequence
+
+# Gets rid of the "X" column)
+cs <- rbind(cs)[ , -1]  
+
+summary(cs)
+# MonthlyIncome and NumberOfDependents contain NAs
+#  - impute? 
+#  - drop?
+#  - covert to zero?
+#  - covert to median value?
+#  - something else?
+
+# mean SeriousDlqin2yrs is 0.06684
+
+### Demographics
+
+table(cs$age)
+hist(cs$age)
+# one of the ages is 0 - impute? or drop?
+# many are over age 90. are these accurate?
+
+table(cs$NumberOfDependents)
+# there are a couple of suspect outliers (>10)
+
+### Finances
+
+# hordes of outliers in this variable, with median of 0.4 and mean of 353
+boxplot(cs$DebtRatio)
+boxplot(log(cs$DebtRatio + 1))
+
+### boxplot(cs$MonthlyIncome)
+boxplot(log(cs$MonthlyIncome + 1))
+summary(log(cs$MonthlyIncome + 1))
+# NA's   :29731
+
+# create a derived variable called MonthlyExpenses 
+cs$MonthlyExpenses <- cs$MonthlyIncome * cs$DebtRatio
+# create another derived variable called NetMonthlySurplus
+cs$NetMonthlySurplus <- cs$MonthlyIncome - cs$MonthlyExpenses
+
+boxplot(cs$MonthlyExpenses)
+boxplot(cs$NetMonthlySurplus)
+# NA's   :29731, propagated from MonthlyIncome
+
+### Deliquencies
+
+table(cs$NumberOfTime30.59DaysPastDueNotWorse)
+table(cs$NumberOfTime60.89DaysPastDueNotWorse)
+table(cs$NumberOfTimes90DaysLate)
+t1 <- subset (cs, NumberOfTime60.89DaysPastDueNotWorse >= 96)
+# there are 5 times of 96 and 264 times of 98 in each of these
+# these are nonsensical values, and should probably be converted to NA
+
+### Existing Credit Utilization
+
+table(cs$NumberRealEstateLoansOrLines)
+# a few of these seem unrealistically high. are they accurate?
+
+table(cs$NumberOfOpenCreditLinesAndLoans)
+# a few of these seem unrealistically high. are they accurate?
+
+boxplot(cs$RevolvingUtilizationOfUnsecuredLines)
+# some serious outliers in this variable
+
+
+```
+
+### some more exploration
+
