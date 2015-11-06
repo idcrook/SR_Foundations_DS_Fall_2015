@@ -1,5 +1,5 @@
 ---
-title: "EDA for Kaggle GiveMeSomeCredit"
+title: "EDA and Data cleanup"
 author: "David Crook"
 date: "November 5, 2015"
 output: html_document
@@ -224,10 +224,12 @@ simplified = cs[c("age", "DebtRatio", "MonthlyIncome", "NumberOfDependents", "Se
 ### This takes a long time so save the results
 ##imputed = complete(mice(simplified))
 ##save(imputed,file="imputed_simplified.Rda")
-load("imputed_simplified.Rda")
+load("imputed_simplified.Rda")  # load value in R object 'imputed'
+``` 
 
-summary(imputed)  
+Here is what the imputed values look like:
 
+``` {r}
 # age
 imputed[rownames(subset(cs, is.na(cs$age))),]$age
 
@@ -240,3 +242,43 @@ describe(imputed.nd)
 hist(imputed.nd)
 ```
 
+Save the imputed values back to main dataframe
+
+``` {r}
+cs$age <- imputed$age
+cs$MonthlyIncome <- imputed$MonthlyIncome
+cs$NumberOfDependents <- imputed$NumberOfDependents
+```
+
+### Delinquency NAs
+
+For logisitic regression, we would like all our data to have no **NA**s, so will convert **NAs** in the delinquency fields to their respective *median* value, which in all cases is zero.
+
+``` {r}
+m30 <- median(cs$NumberOfTime30.59DaysPastDueNotWorse, na.rm = TRUE)
+m60 <- median(cs$NumberOfTime60.89DaysPastDueNotWorse, na.rm = TRUE)
+m90 <- median(cs$NumberOfTimes90DaysLate, na.rm = TRUE)
+mCons <- median(cs$ConsolidatedNumberOfDaysPastDue, na.rm = TRUE)
+
+cs$NumberOfTime30.59DaysPastDueNotWorse <- ifelse(is.na(cs$NumberOfTime30.59DaysPastDueNotWorse),
+                                                  m30,
+                                                  cs$NumberOfTime30.59DaysPastDueNotWorse)
+
+cs$NumberOfTime60.89DaysPastDueNotWorse <- ifelse(is.na(cs$NumberOfTime60.89DaysPastDueNotWorse),
+                                                  m60,
+                                                  cs$NumberOfTime60.89DaysPastDueNotWorse)
+
+cs$NumberOfTimes90DaysLate <- ifelse(is.na(cs$NumberOfTimes90DaysLate),
+                                     m90,
+                                     cs$NumberOfTimes90DaysLate)
+
+cs$ConsolidatedNumberOfDaysPastDue <- ifelse(is.na(cs$ConsolidatedNumberOfDaysPastDue),
+                                             mCons,
+                                             cs$ConsolidatedNumberOfDaysPastDue)
+```
+
+## Save cleaned version of data
+``` {r}
+# summary(cs)
+write.table(cs, "cs-training-cleaned.csv", quote=F, row.names=F, sep=",")
+```
