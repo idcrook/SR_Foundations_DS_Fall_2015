@@ -1,5 +1,5 @@
 ---
-title: "EDA for credit score data - Kaggle GiveMeSomeCredit"
+title: "EDA for Kaggle GiveMeSomeCredit"
 author: "David Crook"
 date: "November 5, 2015"
 output: html_document
@@ -7,13 +7,15 @@ output: html_document
 
 ## Setup
 
-```{r Setup}
+```{r message=FALSE, warning=FALSE}
 setwd("~/projects/Classes/FoundationsOfDataScience_sliderule/github/capstone/GiveMeSomeCredit")
 
 
 suppressMessages(library(dplyr)) # summarise
 library(mice)
 library(caret)
+library(ggplot2)
+library(psych)
 
 ```
 
@@ -25,10 +27,23 @@ cs <- read.csv("cs-training.csv")
 str(cs)
 # can drop the 'X' column, as it is just the observation number in sequence
 
-# Gets rid of the "X" column)
+# Gets rid of the "X" column
 cs <- rbind(cs)[ , -1]  
 
-summary(cs)
+# convert SeriousDlqin2yrs to a factor
+cs$SeriousDlqin2yrs <- factor(cs$SeriousDlqin2yrs, 
+                              levels = c(0, 1), labels = c("ok", "delinquent"))
+
+nb_samples <- nrow(cs)
+```
+
+Out of the **`r formatC(nb_samples, format='d', big.mark=',')`** samples, the rate of delinquency is **`r formatC(100 * sum(cs$SeriousDlqin2yrs == 'delinquent') / nb_samples, format='f', digits=2, big.mark=',')`%** (**`r formatC(sum(cs$SeriousDlqin2yrs == 'delinquent'), format='f', digits=0, big.mark=',')`** observations).
+
+### Demographics
+
+``` {r Demographics, echo=FALSE}
+#summary(cs)
+
 # MonthlyIncome and NumberOfDependents contain NAs
 #  - impute? 
 #  - drop?
@@ -36,60 +51,192 @@ summary(cs)
 #  - covert to median value?
 #  - something else?
 
-# mean SeriousDlqin2yrs is 0.06684
-
 ### Demographics
 
-table(cs$age)
+#table(cs$age)
 hist(cs$age)
-# one of the ages is 0 - impute? or drop?
-# many are over age 90. are these accurate?
 
+```
+
+One of the ages is 0 - impute? or drop?
+
+Many are over age 90. Are these accurate?
+
+``` {r}
 table(cs$NumberOfDependents)
-# there are a couple of suspect outliers (>10)
+```
+
+There are a couple of suspect outliers (>10) but not too bad.
+
 
 ### Finances
 
-# hordes of outliers in this variable, with median of 0.4 and mean of 353
-boxplot(cs$DebtRatio)
+#### DebtRatio
+
+``` {r Finances DebtRatio}
+
+#boxplot(cs$DebtRatio)
 boxplot(log(cs$DebtRatio + 1))
+```
+
+There are many outliers in this variable, with a median of **`r formatC(median(cs$DebtRatio), format='f', digits=2, big.mark=',')`** and a mean of **`r formatC(mean(cs$DebtRatio), format='f', digits=2, big.mark=',')`**
+
+#### MonthlyIncome
+
+``` {r MonthlyIncome}
 
 ### boxplot(cs$MonthlyIncome)
 boxplot(log(cs$MonthlyIncome + 1))
 summary(log(cs$MonthlyIncome + 1))
-# NA's   :29731
-
-# create a derived variable called MonthlyExpenses 
-cs$MonthlyExpenses <- cs$MonthlyIncome * cs$DebtRatio
-# create another derived variable called NetMonthlySurplus
-cs$NetMonthlySurplus <- cs$MonthlyIncome - cs$MonthlyExpenses
-
-boxplot(cs$MonthlyExpenses)
-boxplot(cs$NetMonthlySurplus)
-# NA's   :29731, propagated from MonthlyIncome
-
-### Deliquencies
-
-table(cs$NumberOfTime30.59DaysPastDueNotWorse)
-table(cs$NumberOfTime60.89DaysPastDueNotWorse)
-table(cs$NumberOfTimes90DaysLate)
-t1 <- subset (cs, NumberOfTime60.89DaysPastDueNotWorse >= 96)
-# there are 5 times of 96 and 264 times of 98 in each of these
-# these are nonsensical values, and should probably be converted to NA
-
-### Existing Credit Utilization
-
-table(cs$NumberRealEstateLoansOrLines)
-# a few of these seem unrealistically high. are they accurate?
-
-table(cs$NumberOfOpenCreditLinesAndLoans)
-# a few of these seem unrealistically high. are they accurate?
-
-boxplot(cs$RevolvingUtilizationOfUnsecuredLines)
-# some serious outliers in this variable
-
 
 ```
 
-### some more exploration
+There are **`r formatC(sum(is.na(cs$MonthlyIncome)), format='f', digits=0, big.mark=',')` NA**s in `MonthlyIncome`.
+
+
+#### Creating additional Finances variables
+
+``` {r Add Finances Variables}
+# https://www.kaggle.com/c/GiveMeSomeCredit/forums/t/1166/congratulations-to-the-winners/7231#post7231
+# "DebtRatio was computed by substituting 1 to MonthlyIncome, where
+# MonthlyIncome was not available"
+
+# create a derived variable called MonthlyExpenses taking the above NA
+# disposition into account
+cs$MonthlyExpenses <- ifelse(is.na(cs$MonthlyIncome),
+                             1 * cs$DebtRatio,
+                             cs$MonthlyIncome * cs$DebtRatio)
+
+# create another derived variable called NetMonthlySurplus
+cs$NetMonthlySurplus <- ifelse(is.na(cs$MonthlyIncome),
+                             0 - cs$MonthlyExpenses,
+                             cs$MonthlyIncome - cs$MonthlyExpenses)
+```
+
+Some boxplots for these created variables:
+
+``` {r warning=FALSE}
+boxplot(log(1 + cs$MonthlyExpenses))
+boxplot(log(cs$NetMonthlySurplus))
+```
+
+**`r formatC(sum(cs$MonthlyExpenses == cs$DebtRatio), format='f', digits=0, big.mark=',')`** have `MonthlyExpenses` equalling `DebtRatio`, and **`r formatC(sum(cs$NetMonthlySurplus <= 1), format='f', digits=0, big.mark=',')`** have `NetMonthlySurplus` of less than/equal to `1`
+
+``` {r NetMonthlySurplus as primitive predictor}
+table(cs$SeriousDlqin2yrs, cs$NetMonthlySurplus <= 1)
+```
+
+``` {r echo=FALSE}
+TP <- sum(  (cs$NetMonthlySurplus <= 1) & cs$SeriousDlqin2yrs == 'delinquent')
+FN <- sum( !(cs$NetMonthlySurplus <= 1) & cs$SeriousDlqin2yrs == 'delinquent')
+FP <- sum(  (cs$NetMonthlySurplus <= 1) & cs$SeriousDlqin2yrs == 'ok')
+TN <- sum( !(cs$NetMonthlySurplus <= 1) & cs$SeriousDlqin2yrs == 'ok')
+sensitivity = TP / (TP + FN)
+specificity = TN / (TN + FP)
+accuracy = (TP + TN) / (TP + FN + TN + FP)
+```
+
+The delinquency rate (our baseline) in the sample is **`r formatC(100 * sum(cs$SeriousDlqin2yrs == 'delinquent') / nb_samples, format='f', digits=2, big.mark=',')`%**. The **accuracy**  for primitive predictor `cs$NetMonthlySurplus <= 1` is **`r formatC(100 * accuracy, format='f', digits=2, big.mark=',')`%**, which is already greater than a baseline accuracy of **50%**.
+
+The **sensitivity**  for primitive predictor `cs$NetMonthlySurplus <= 1` is  **`r formatC(100 * sensitivity, format='f', digits=2, big.mark=',')`%**,  and the **specificity** is **`r formatC(100 * specificity, format='f', digits=2, big.mark=',')`%**.
+
+For our model, we want a higher sensitivity than that to predict a much higher portion of the delinquent borrowers, since these are the costly borrowers.
+
+
+### Deliquencies
+
+``` {r Deliquencies, message=FALSE}
+
+#table(cs$NumberOfTime30.59DaysPastDueNotWorse)
+#table(cs$NumberOfTime60.89DaysPastDueNotWorse)
+#table(cs$NumberOfTimes90DaysLate)
+
+# there are 5 times of 96 and 264 times of 98 in each of these
+# these are nonsensical values, and will be converted to NA
+
+cs$NumberOfTime30.59DaysPastDueNotWorse <- ifelse(cs$NumberOfTime30.59DaysPastDueNotWorse >= 96, NA,
+                                                  cs$NumberOfTime30.59DaysPastDueNotWorse)
+
+cs$NumberOfTime60.89DaysPastDueNotWorse <- ifelse(cs$NumberOfTime60.89DaysPastDueNotWorse >= 96, NA,
+                                                  cs$NumberOfTime60.89DaysPastDueNotWorse)
+
+cs$NumberOfTimes90DaysLate <- ifelse(cs$NumberOfTimes90DaysLate >= 96, NA,
+                                     cs$NumberOfTimes90DaysLate)
+
+# perhaps we'll impute these or perhaps we'll leave them
+```
+
+#### Creating additional Deliquencies variables
+
+The Delinquencies variables are all related.  Let's try to consolidate to a single new variable.
+
+``` {r Additional Deliquencies variables, message=FALSE}
+
+cs$ConsolidatedNumberOfDaysPastDue <- (cs$NumberOfTime30.59DaysPastDueNotWorse * 30) +
+  (cs$NumberOfTime60.89DaysPastDueNotWorse * 60) +
+  (cs$NumberOfTimes90DaysLate * 90)
+
+# the following is just to demonstrate that >90 days in the data is not a subset
+# of >60, and the calculation above is valid
+t1 <- subset(cs, ConsolidatedNumberOfDaysPastDue > 0)
+t1[2,c("NumberOfTime30.59DaysPastDueNotWorse", "NumberOfTime60.89DaysPastDueNotWorse", "NumberOfTimes90DaysLate", "ConsolidatedNumberOfDaysPastDue")]
+
+#table(cs$ConsolidatedNumberOfDaysPastDue)
+boxplot(ConsolidatedNumberOfDaysPastDue ~ SeriousDlqin2yrs, data = cs, 
+        main = "Consolidated number of days past due")
+```
+
+The boxplot shows a positive correlation for delinquencies.
+
+### Existing Credit Utilization
+
+``` {r}
+
+### Existing Credit Utilization
+
+# a few of these seem unrealistically high. are they accurate?
+#table(cs$NumberRealEstateLoansOrLines)
+summary(cs$NumberRealEstateLoansOrLines)
+#table(cs$NumberOfOpenCreditLinesAndLoans)
+summary(cs$NumberOfOpenCreditLinesAndLoans)
+
+# some serious outliers in this variable, perhaps cutoff / normalize
+boxplot(log(cs$RevolvingUtilizationOfUnsecuredLines))
+```
+
+## Additional data cleanup
+
+### zero age and NAs in MonthlyIncome, NumberOfDependents
+
+One of the `age` observations is 0. let's impute this observation, along with `MonthlyIncome` and `NumberOfDependents` **NA**s.
+
+``` {r}
+cs$age <- ifelse(cs$age == 0, NA, cs$age)
+sum(is.na(cs$age))
+
+set.seed(144)
+
+# Multiple imputation
+simplified = cs[c("age", "DebtRatio", "MonthlyIncome", "NumberOfDependents", "SeriousDlqin2yrs", 
+  "NumberRealEstateLoansOrLines", "NumberOfOpenCreditLinesAndLoans"
+  )]
+
+### This takes a long time so save the results
+##imputed = complete(mice(simplified))
+##save(imputed,file="imputed_simplified.Rda")
+load("imputed_simplified.Rda")
+
+summary(imputed)  
+
+# age
+imputed[rownames(subset(cs, is.na(cs$age))),]$age
+
+# MonthlyIncome and NumberOfDependents imputed value summaries
+imputed.mi <- imputed[rownames(subset(cs, is.na(cs$MonthlyIncome))),]$MonthlyIncome
+imputed.nd <- imputed[rownames(subset(cs, is.na(cs$NumberOfDependents))),]$NumberOfDependents
+describe(imputed.mi)
+boxplot(imputed.mi)
+describe(imputed.nd)
+hist(imputed.nd)
+```
 
