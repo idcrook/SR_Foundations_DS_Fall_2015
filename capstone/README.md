@@ -1,13 +1,18 @@
 
 # Capstone Project for David Crook
 
-Placeholder for capstone project in Foundations of Data Science (sliderule)
+Final Report
 
-# Description of files
+- Paper
+- Presentation
+- Code: [(directory)](https://github.com/dpcrook/SR_Foundations_DS_Fall_2015/tree/master/capstone/GiveMeSomeCredit)
+  - [EDA.Rmd](GiveMeSomeCredit/EDA.Rmd) - output [.html](https://dpcrook.github.io/SR_Foundations_DS_Fall_2015/capstone/GiveMeSomeCredit/EDA.html) 
+  - [Modeling.Rmd](GiveMeSomeCredit/Modeling.Rmd) - output [.html](https://dpcrook.github.io/SR_Foundations_DS_Fall_2015/capstone/GiveMeSomeCredit/Modeling.html) 
+- 
 
-- `README.md`
-- `ProjectIdeas.md` - collection of capstone project ideas
-- `iris_classification/` - classification problem
-- `Proposal.md` - Submitted
-- `MilestoneReport.md` - Outline
-- TBD `FinalDraft.md`
+## Other related files
+
+- TBD [FinalDraft.md](FinalDraft.md)
+- [Proposal.md](Proposal.md)
+- [MilestoneReport.md](MilestoneReport.md) - Outline
+- [ProjectIdeas.md](ProjectIdeas.md) - Initial collection of capstone project ideas

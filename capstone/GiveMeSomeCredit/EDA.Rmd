@@ -5,6 +5,8 @@ date: "November 5, 2015"
 output: html_document
 ---
 
+View output [EDA.html](https://dpcrook.github.io/SR_Foundations_DS_Fall_2015/capstone/GiveMeSomeCredit/EDA.html).
+
 ## Setup
 
 ```{r message=FALSE, warning=FALSE}
@@ -280,5 +282,11 @@ cs$ConsolidatedNumberOfDaysPastDue <- ifelse(is.na(cs$ConsolidatedNumberOfDaysPa
 ## Save cleaned version of data
 ``` {r}
 # summary(cs)
+
+# convert back to integer before saving
+seriousd.int <- as.integer(factor(cs$SeriousDlqin2yrs))
+seriousd.int <- ifelse(seriousd.int == 2, 1, 0)
+cs$SeriousDlqin2yrs <- (seriousd.int)
+
 write.table(cs, "cs-training-cleaned.csv", quote=F, row.names=F, sep=",")
 ```

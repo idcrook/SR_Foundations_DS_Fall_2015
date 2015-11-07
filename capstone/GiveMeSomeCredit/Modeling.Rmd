@@ -7,6 +7,8 @@ fontsize: 12
 geometry: margin=0.6in
 ---
 
+View output [Modeling.html](https://dpcrook.github.io/SR_Foundations_DS_Fall_2015/capstone/GiveMeSomeCredit/Modeling.html).
+
 ## Setup
 
 #### {r message=FALSE, warning=FALSE, echo=FALSE}
@@ -21,12 +23,25 @@ library(rpart.plot)
 suppressMessages(library(dplyr)) # summarise
 library(caret)
 library(data.table)
-
+#install.packages("stepPlr")
 
 source('EvaluationMetrics.R')
 
 # set randomizer's seed
 set.seed(142)
+
+x_vars = c(
+  'RevolvingUtilizationOfUnsecuredLines',
+  'age',
+  'NumberOfTime30.59DaysPastDueNotWorse',
+  'DebtRatio',
+  'MonthlyIncome',
+  'NumberOfOpenCreditLinesAndLoans',
+  'NumberOfTimes90DaysLate',
+  'NumberRealEstateLoansOrLines',
+  'NumberOfTime60.89DaysPastDueNotWorse',
+  'NumberOfDependents'
+  )
 ```
 
 ## Read the data set
@@ -34,6 +49,11 @@ set.seed(142)
 ```{r Import data, echo=FALSE}
 # read in cleaned version saved by EDA.Rmd
 cs <- read.csv("cs-training-cleaned.csv")
+
+# restore levels to factors
+cs$SeriousDlqin2yrs <- factor(cs$SeriousDlqin2yrs, 
+                              levels = c(0, 1), labels = c("ok", "delinquent"))
+
 cs.test <- read.csv("cs-test.csv")
 
 #str(cs)
@@ -88,38 +108,95 @@ caret_train_control <- trainControl(
   method='repeatedcv',         # repeated Cross Validation
   number=5,                    # 5 folds
   repeats=2,                   # 2 repeats
-  allowParallel=TRUE)
+  allowParallel=FALSE)
 ```
 
 ```{r message=FALSE, warning=FALSE}
 B <- 600
 
-x_vars = c(
-  'RevolvingUtilizationOfUnsecuredLines',
-  'age',
-  'NumberOfTime30.59DaysPastDueNotWorse',
-  'DebtRatio',
-  'MonthlyIncome',
-  'NumberOfOpenCreditLinesAndLoans',
-  'NumberOfTimes90DaysLate',
-  'NumberRealEstateLoansOrLines',
-  'NumberOfTime60.89DaysPastDueNotWorse',
-  'NumberOfDependents'
-  )
+# # http://topepo.github.io/caret/Random_Forest.html
+# rf_model2 <- train(
+#   x=cs_train[, x_vars],
+#   y=cs_train$SeriousDlqin2yrs,
+#   method='rf',        # Random Forest
+#   metric=caret_optimized_metric,
+#   ntree=B,            # number of trees in the Random Forest
+#   nodesize=100,       # minimum node size set small enough to allow for complex trees,
+#                       # but not so small as to require too large B to eliminate high variance
+#   importance=TRUE,    # evaluate importance of predictors
+#   keep.inbag=TRUE,
+#   trControl=caret_train_control,
+#   tuneGrid=NULL)
+# 
 
-# http://topepo.github.io/caret/Random_Forest.html
+```
 
-rf_model <- train(
+
+```{r message=FALSE, warning=FALSE}
+log_reg_model <- train(
   x=cs_train[, x_vars],
   y=cs_train$SeriousDlqin2yrs,
-  method='rf',        # Random Forest
+  preProcess=c('center', 'scale'), 
+  method='plr',       # Penalized Logistic Regression
   metric=caret_optimized_metric,
-  ntree=B,            # number of trees in the Random Forest
-  nodesize=100,       # minimum node size set small enough to allow for complex trees,
-                      # but not so small as to require too large B to eliminate high variance
-  importance=TRUE,    # evaluate importance of predictors
-  keep.inbag=TRUE,
   trControl=caret_train_control,
-  tuneGrid=NULL)
+  tuneGrid=expand.grid(
+    lambda=0,   # weight penalty parameter
+    cp='aic'))     # complexity parameter (AIC / BIC)
+```
+
+
+
+
+## Model prediction comparison
+
+
+``` {r}
+low_prob <- 1e-6
+high_prob <- 1 - low_prob
+log_low_prob <- log(low_prob)
+log_high_prob <- log(high_prob)
+log_prob_thresholds <- seq(from=log_low_prob, to=log_high_prob, length.out=1000)
+prob_thresholds <- exp(log_prob_thresholds)
+
+# "bin_classif_eval" function is from the "EvaluationMetrics.R" helper script
+
+# rf_pred_probs <- predict(
+#   rf_model, newdata=cs_valid[ , x_vars], type='prob')
+# rf_oos_performance <- bin_classif_eval(
+#   rf_pred_probs$delinquent, cs_valid$SeriousDlqin2yrs, thresholds=prob_thresholds)
+
+log_reg_pred_probs <- predict(
+  log_reg_model, newdata=cs_valid[, x_vars], type='prob')
+log_reg_oos_performance <- bin_classif_eval(
+  log_reg_pred_probs$delinquent, cs_valid$SeriousDlqin2yrs, thresholds=prob_thresholds)
+```
+
+
+### Plot of lift curves
+
+``` {r}
+#plot(x=1 - rf_oos_performance$specificity,
+#     y=rf_oos_performance$sensitivity,
+plot(x=1,
+     y=0,
+     type = "l", col='darkgreen', lwd=3,
+     xlim = c(0., 1.), ylim = c(0., 1.),
+     main = "ROC Curves (Validation Data)",
+     xlab = "1 - Specificity", ylab = "Sensitivity")
+abline(a=0,b=1,lty=2,col=8)
+# lines(x=1 - boost_oos_performance$specificity,
+#       y=boost_oos_performance$sensitivity,
+#       col='green', lwd=3)
+lines(x=1 - log_reg_oos_performance$specificity,
+      y=log_reg_oos_performance$sensitivity,
+      col='red', lwd=3)
+# legend('right', c('Random Forest', 'Boosted Trees', 'Logistic Regression'), 
+#    lty=1, col=c('darkgreen', 'green', 'red'), lwd=3, cex=1.)
+legend('right', c('Random Forest',  'Logistic Regression'), 
+    lty=1, col=c('darkgreen',  'red'), lwd=3, cex=1.)
+# legend('right', c('Random Forest'), 
+#        lty=1, col=c('darkgreen'), lwd=3, cex=1.)
+
 ```
 
