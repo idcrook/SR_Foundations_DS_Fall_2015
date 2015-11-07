@@ -114,20 +114,20 @@ caret_train_control <- trainControl(
 ```{r message=FALSE, warning=FALSE}
 B <- 600
 
-# # http://topepo.github.io/caret/Random_Forest.html
-# rf_model2 <- train(
-#   x=cs_train[, x_vars],
-#   y=cs_train$SeriousDlqin2yrs,
-#   method='rf',        # Random Forest
-#   metric=caret_optimized_metric,
-#   ntree=B,            # number of trees in the Random Forest
-#   nodesize=100,       # minimum node size set small enough to allow for complex trees,
-#                       # but not so small as to require too large B to eliminate high variance
-#   importance=TRUE,    # evaluate importance of predictors
-#   keep.inbag=TRUE,
-#   trControl=caret_train_control,
-#   tuneGrid=NULL)
-# 
+# http://topepo.github.io/caret/Random_Forest.html
+rf_model2 <- train(
+  x=cs_train[, x_vars],
+  y=cs_train$SeriousDlqin2yrs,
+  method='rf',        # Random Forest
+  metric=caret_optimized_metric,
+  ntree=B,            # number of trees in the Random Forest
+  nodesize=100,       # minimum node size set small enough to allow for complex trees,
+                      # but not so small as to require too large B to eliminate high variance
+  importance=TRUE,    # evaluate importance of predictors
+  keep.inbag=TRUE,
+  trControl=caret_train_control,
+  tuneGrid=NULL)
+
 
 ```
 
@@ -161,10 +161,10 @@ prob_thresholds <- exp(log_prob_thresholds)
 
 # "bin_classif_eval" function is from the "EvaluationMetrics.R" helper script
 
-# rf_pred_probs <- predict(
-#   rf_model, newdata=cs_valid[ , x_vars], type='prob')
-# rf_oos_performance <- bin_classif_eval(
-#   rf_pred_probs$delinquent, cs_valid$SeriousDlqin2yrs, thresholds=prob_thresholds)
+rf_pred_probs <- predict(
+  rf_model, newdata=cs_valid[ , x_vars], type='prob')
+rf_oos_performance <- bin_classif_eval(
+  rf_pred_probs$delinquent, cs_valid$SeriousDlqin2yrs, thresholds=prob_thresholds)
 
 log_reg_pred_probs <- predict(
   log_reg_model, newdata=cs_valid[, x_vars], type='prob')
@@ -176,10 +176,8 @@ log_reg_oos_performance <- bin_classif_eval(
 ### Plot of lift curves
 
 ``` {r}
-#plot(x=1 - rf_oos_performance$specificity,
-#     y=rf_oos_performance$sensitivity,
-plot(x=1,
-     y=0,
+plot(x=1 - rf_oos_performance$specificity,
+    y=rf_oos_performance$sensitivity,
      type = "l", col='darkgreen', lwd=3,
      xlim = c(0., 1.), ylim = c(0., 1.),
      main = "ROC Curves (Validation Data)",
