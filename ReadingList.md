@@ -6,7 +6,7 @@
 - [ ] [Learning Statistics with R](http://health.adelaide.edu.au/psychology/ccs/teaching/lsr/)
   - http://health.adelaide.edu.au/psychology/ccs/docs/lsr/lsr-0.5.pdf
 - [ ] Jeffrey M. Stanton. “Introduction to Data Science.” Jeff Stanton, 2013. iBooks. https://itun.es/us/_5tIF.n
-- [ ] Doing Data Science: Straight Talk from the Frontline (O'Reilly)
+- [x] Doing Data Science: Straight Talk from the Frontline (O'Reilly)
 - [ ] "Big Data: Understanding How Data Powers Big Business." Bill Schmarzo.
 
 ## Other Books
