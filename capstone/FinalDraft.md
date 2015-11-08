@@ -113,11 +113,12 @@ There are `5` occurrences of `96` and `264` occurrences of `98` in each of these
 
 ## Data cleaning techniques
 
-- The `mice` [R package](https://cran.r-project.org/web/packages/mice/index.html) (`mice`: "Multivariate Imputation by Chained Equations") was chosen to impute the values.  Refer to the code in [EDA.Rmd](GiveMeSomeCredit/EDA.Rmd) at `imputed = complete(mice(simplified))`. Since the imputation process can take a lot of time, and can be slightly different each time as a result of the randomization inherent in the technqiue, the resulting imputed values were stored in a file for reuse.
+The `mice` [R package](https://cran.r-project.org/web/packages/mice/index.html) (`mice`: "Multivariate Imputation by Chained Equations") was chosen to impute the values.  Refer to the code in [EDA.Rmd](GiveMeSomeCredit/EDA.Rmd) at `imputed = complete(mice(simplified))`. Since the imputation process can take a lot of time, and can be slightly different each time as a result of the randomization inherent in the technqiue, the resulting imputed values were stored in a file (`imputed_simplified.Rda`) for reuse.
 
-In the training dataset, the variables `age`, `MonthlyIncome`, `NumberOfDependents` contained **NA** values. For these variables with **NA**s, the values were imputed using `mice` and the resulting cleaned data was saved to a file `cs-training-cleaned.csv`.
+In the training dataset, the variables `age`, `MonthlyIncome`, `NumberOfDependents` contained **NA** values. For these variables with **NA**s, the values were imputed using `mice`. Also, the variables  `NumberOfTime30-59DaysPastDueNotWorse`, `NumberOfTime60-89DaysPastDueNotWorse`, `NumberOfTimes90DaysLate` effectively contained **NA** values . The **NA**s in these variables were set to the *median* values.
 
-Also, the variables  `NumberOfTime30-59DaysPastDueNotWorse`, `NumberOfTime60-89DaysPastDueNotWorse`, `NumberOfTimes90DaysLate` effectively contained **NA** values . The **NA**s in these variables were set to the *median* values.
+The resulting cleaned data was saved to a file `cs-training-cleaned.csv`, to be used as-is as input in [Modeling.Rmd](GiveMeSomeCredit/Modeling.Rmd).
+
 
 ## Feature Discovery
 
@@ -142,9 +143,6 @@ Models were built and used to evaluate among the **decision tree** (CART), **ran
 For the first iteration of the modeling, no features were de-selected and all original variables were used. Similarly, no constructed features were included in the modeling. The ROC (Receiver Operating Characteristic) curve comparing the three first-iteration models:
 
 ![First Iteration ROC](GiveMeSomeCredit/ROC1a.png "First Iteration ROC curve")
-
-
-
 
 
 

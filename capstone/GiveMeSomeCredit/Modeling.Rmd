@@ -356,8 +356,6 @@ rf_test_pred_probs <- predict(
 rf_test_performance <- bin_classif_eval(
   rf_test_pred_probs$delinquent, cs_test$SeriousDlqin2yrs, thresholds=rf_selected_prob_threshold)
 
-a <- c("accuracy", "sensitivity", "specificity")
-
 # expected predicted performance 
 display_accu_sens_spec(rf_oos_performance[rf_i, ])
 
@@ -365,4 +363,4 @@ display_accu_sens_spec(rf_oos_performance[rf_i, ])
 display_accu_sens_spec(rf_test_performance)
 ```
 
-The performance is in the expected performance ballpark.
+The Random Forest model has a higher *accuracy* at the chosen sensitivity threshold. The performance comparison on the test slice is in the expected performance ballpark, within 1% or so.
