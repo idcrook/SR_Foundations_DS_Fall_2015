@@ -11,7 +11,6 @@ View output [Modeling.html](https://dpcrook.github.io/SR_Foundations_DS_Fall_201
 
 ## Setup
 
-#### {r message=FALSE, warning=FALSE, echo=FALSE}
 
 ```{r message=FALSE, warning=FALSE, echo=FALSE}
 setwd("~/projects/Classes/FoundationsOfDataScience_sliderule/github/capstone/GiveMeSomeCredit")
@@ -29,19 +28,9 @@ source('EvaluationMetrics.R')
 
 # set randomizer's seed
 set.seed(142)
+```
 
-x_vars = c(
-  'RevolvingUtilizationOfUnsecuredLines',
-  'age',
-  'NumberOfTime30.59DaysPastDueNotWorse',
-  'DebtRatio',
-  'MonthlyIncome',
-  'NumberOfOpenCreditLinesAndLoans',
-  'NumberOfTimes90DaysLate',
-  'NumberRealEstateLoansOrLines',
-  'NumberOfTime60.89DaysPastDueNotWorse',
-  'NumberOfDependents'
-  )
+
 ```
 
 ## Read the data set
@@ -60,6 +49,37 @@ cs.test <- read.csv("cs-test.csv")
 #str(cs.test)
 
 nb_samples <- nrow(cs)
+
+x_vars = c(
+  'RevolvingUtilizationOfUnsecuredLines',
+  'age',
+  'NumberOfTime30.59DaysPastDueNotWorse',
+  'DebtRatio',
+  'MonthlyIncome',
+  'NumberOfOpenCreditLinesAndLoans',
+  'NumberOfTimes90DaysLate',
+  'NumberRealEstateLoansOrLines',
+  'NumberOfTime60.89DaysPastDueNotWorse',
+  'NumberOfDependents'
+  )
+
+x_vars_features = c(
+  'RevolvingUtilizationOfUnsecuredLines',
+  'age',
+  'NumberOfTime30.59DaysPastDueNotWorse',
+  'DebtRatio',
+  'MonthlyIncome',
+  'NumberOfOpenCreditLinesAndLoans',
+  'NumberOfTimes90DaysLate',
+  'NumberRealEstateLoansOrLines',
+  'NumberOfTime60.89DaysPastDueNotWorse',
+  'NumberOfDependents',
+  'MonthlyExpenses',
+  'NetMonthlySurplus',
+  'ConsolidatedNumberOfDaysPastDue'
+  )
+
+
 ```
 
 Out of the **`r formatC(nb_samples, format='d', big.mark=',')`** samples, the incidence of loan delinquency is **`r formatC(100 * sum(cs$SeriousDlqin2yrs == 'delinquent') / nb_samples, format='f', digits=2, big.mark=',')`%**.
@@ -111,6 +131,8 @@ caret_train_control <- trainControl(
   allowParallel=FALSE)
 ```
 
+### Random Forest
+
 ```{r message=FALSE, warning=FALSE}
 B <- 600
 
@@ -131,6 +153,7 @@ rf_model2 <- train(
 
 ```
 
+### Logistic Regression
 
 ```{r message=FALSE, warning=FALSE}
 log_reg_model <- train(

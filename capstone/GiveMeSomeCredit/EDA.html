@@ -67,6 +67,7 @@ img {
 </div>
 
 
+<p>View output <a href="https://dpcrook.github.io/SR_Foundations_DS_Fall_2015/capstone/GiveMeSomeCredit/EDA.html">EDA.html</a>.</p>
 <div id="setup" class="section level2">
 <h2>Setup</h2>
 <pre class="r"><code>setwd(&quot;~/projects/Classes/FoundationsOfDataScience_sliderule/github/capstone/GiveMeSomeCredit&quot;)
@@ -305,6 +306,12 @@ cs$ConsolidatedNumberOfDaysPastDue &lt;- ifelse(is.na(cs$ConsolidatedNumberOfDay
 <div id="save-cleaned-version-of-data" class="section level2">
 <h2>Save cleaned version of data</h2>
 <pre class="r"><code># summary(cs)
+
+# convert back to integer before saving
+seriousd.int &lt;- as.integer(factor(cs$SeriousDlqin2yrs))
+seriousd.int &lt;- ifelse(seriousd.int == 2, 1, 0)
+cs$SeriousDlqin2yrs &lt;- (seriousd.int)
+
 write.table(cs, &quot;cs-training-cleaned.csv&quot;, quote=F, row.names=F, sep=&quot;,&quot;)</code></pre>
 </div>
 
