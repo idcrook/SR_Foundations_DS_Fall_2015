@@ -1,7 +1,7 @@
 
 # Capstone Project for David Crook
 
-Final Report
+Final Report - based on completed Kaggle competition [GiveMeSomeCredit](https://www.kaggle.com/c/GiveMeSomeCredit)
 
 - Paper
 - Presentation
