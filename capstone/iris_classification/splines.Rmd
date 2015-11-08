@@ -1,0 +1,58 @@
+---
+title: "splines"
+author: "David Crook"
+date: "November 4, 2015"
+output: html_document
+---
+
+
+<https://www.kaggle.com/toshik/introducing-kaggle-scripts/splines-with-r/files>
+
+
+
+```{r}
+# = = = = = function = = = = = #
+
+# Color Palettes 
+# from http://stackoverflow.com/questions/8197559/emulate-ggplot2-default-color-palette
+gg_color_hue <- function(n) {
+	hues = seq(15, 375, length=n+1)
+	hcl(h=hues, l=65, c=100)[1:n]
+}
+
+# = = = = = read data = = = = = #
+data(iris)
+mat <- matrix(as.numeric(unlist(iris)), nrow=nrow(iris), ncol=ncol(iris))
+colnames(mat) <- colnames(iris)
+
+# = = = = = normalize = = = = = #
+labels <- mat[,ncol(mat)]
+for(i in 1:ncol(mat)){
+	mat[,i] <- (mat[,i] - min(mat[,i]))
+	mat[,i] <- mat[,i] / max(mat[,i])
+}
+
+# = = = = = start plot = = = = = #
+png(filename="splines.png", width=800, height=800, bg = "black")
+plot.new()
+plot.window(c(1, 5), c(-0.1, 1.1))
+
+axis(1, colnames(mat), pos = 0, at = 1:5, col.axis=rgb(0.5,0.5,0.5), col=rgb(0.5,0.5,0.5))
+axis(1, pos = 1, at = 1:5, labels=FALSE, col=rgb(0.5,0.5,0.5))
+
+for(i in 1:4){
+	axis(2, pos = i, at = 0:1, labels=FALSE, col=rgb(0.5,0.5,0.5))
+}
+axis(4, levels(iris$Species), at = seq(0,1,length.out = 3), adj = 1, pos=5, col.axis=rgb(0.5,0.5,0.5), col=rgb(0.5,0.5,0.5))
+
+# = = = = = plot 'splines' = = = = = #
+mycolors = gg_color_hue(3)
+for(i in 1:150){
+	oneline <- spline(1:5, mat[i,], 20*ncol(mat))
+	color <- paste0(mycolors[labels[i]], sprintf("%X",as.integer(255*0.5)))
+	lines(oneline$x, oneline$y, type="l", col=color, xlim=c(1,5), ylim=c(-0.1,1.1), lwd=1.5)
+}
+
+# = = = = = finish plot = = = = = #
+dev.off()
+```
