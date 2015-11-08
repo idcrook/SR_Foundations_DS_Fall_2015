@@ -15,3 +15,4 @@ Project based on Kaggle competition [GiveMeSomeCredit](https://www.kaggle.com/c/
 - [MilestoneReport.md](MilestoneReport.md) - Data story - an intermediate project milestone
 - [Proposal.md](Proposal.md) - Draft proposal for capstone project
 - [ProjectIdeas.md](ProjectIdeas.md) - Initial collection of capstone project ideas
+- [iris_classification/](iris_classification/) - directory originally intended to contain classifier technique studies.
