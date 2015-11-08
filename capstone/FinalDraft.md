@@ -141,7 +141,7 @@ Models were built and used to evaluate among the **decision tree** (CART), **ran
 
 For the first iteration of the modeling, no features were de-selected and all original variables were used. Similarly, no constructed features were included in the modeling. The ROC (Receiver Operating Characteristic) curve comparing the three first-iteration models:
 
-![First Iteration ROC](GiveMeSomeCredit/ROC1.png "First Iteration ROC curve")
+![First Iteration ROC](GiveMeSomeCredit/ROC1a.png "First Iteration ROC curve")
 
 
 
