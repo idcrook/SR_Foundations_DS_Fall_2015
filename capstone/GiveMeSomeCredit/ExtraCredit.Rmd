@@ -5,13 +5,14 @@ date: "November 8, 2015"
 output: html_document
 ---
 
-View output [ExtraCredit.html](https://dpcrook.github.io/SR_Foundations_DS_Fall_2015/capstone/GiveMeSomeCredit/ExtraCredit.html).
+Output: [ExtraCredit.html](https://dpcrook.github.io/SR_Foundations_DS_Fall_2015/capstone/GiveMeSomeCredit/ExtraCredit.html)
 
 
 # Extra credit : Kaggle competition entry
 
+Setup
 
-```{r Setup, message=FALSE, warning=FALSE, echo=FALSE}
+``` {r Setup, message=FALSE, warning=FALSE, echo=FALSE}
 setwd("~/projects/Classes/FoundationsOfDataScience_sliderule/github/capstone/GiveMeSomeCredit")
 
 # need these for decision tree graph
@@ -102,6 +103,10 @@ cart_modelxc
 cart_modelxc.best.tree = cart_modelxc$finalModel
 prp(cart_modelxc.best.tree)
 ```
+
+Saved copy of tree:
+
+![CART Tree xc](carttree_xc.png "CART Tree")
 
 ### Random Forest xc
 
@@ -254,3 +259,20 @@ write.table(results, "rfEntry.csv", quote=F, row.names=F, sep=",")
 
 ```
 
+# Submit predictions
+
+On the final [leaderboard at Kaggle](https://www.kaggle.com/c/GiveMeSomeCredit/leaderboard), there were a total of `925` team submissions. The winning entry from team "Perfect Storm" had a AUC of `0.869558`.
+
+### The CART submission 
+
+![CART Ranking](CART-model-placement.png "CART submission ranking")
+
+It's AUC was scored at **`0.702828`**. It would have ranked at `820`.
+
+### The Random Forest submission
+
+![RF Ranking](RF-model-placement.png "RF submission ranking")
+
+It's AUC was scored at **`0.794789`**. It would have ranked at `772`. This placement is only better than **`r formatC(100 * (1  - 772/925), format='f', digits=2)`** of competitor team entries, or about one-sixth of the entries.
+
+Getting an increase in AUC of **`r formatC(0.869558 - 0.794789, format='f', digits=6)`** would have been required to win the competition.
