@@ -113,7 +113,7 @@ There are `5` occurrences of `96` and `264` occurrences of `98` in each of these
 
 ## Data cleaning techniques
 
-The `mice` [R package](https://cran.r-project.org/web/packages/mice/index.html) (`mice`: "Multivariate Imputation by Chained Equations") was chosen to impute the values.  Refer to the code in [EDA.Rmd](GiveMeSomeCredit/EDA.Rmd) at `imputed = complete(mice(simplified))`. Since the imputation process can take a lot of time, and can be slightly different each time as a result of the randomization inherent in the technqiue, the resulting imputed values were stored in a file (`imputed_simplified.Rda`) for reuse.
+The `mice` [R package](https://cran.r-project.org/web/packages/mice/index.html) (`mice`: "Multivariate Imputation by Chained Equations") was chosen to impute the **NA** values.  Refer to the code in [EDA.Rmd](GiveMeSomeCredit/EDA.Rmd) at `imputed = complete(mice(simplified))`. Since the imputation process can take a lot of time, and can be slightly different each time as a result of the randomization inherent in the technique, the resulting imputed values were stored in a file (`imputed_simplified.Rda`) for reuse.
 
 In the training dataset, the variables `age`, `MonthlyIncome`, `NumberOfDependents` contained **NA** values. For these variables with **NA**s, the values were imputed using `mice`. Also, the variables  `NumberOfTime30-59DaysPastDueNotWorse`, `NumberOfTime60-89DaysPastDueNotWorse`, `NumberOfTimes90DaysLate` effectively contained **NA** values . The **NA**s in these variables were set to the *median* values.
 
@@ -138,22 +138,51 @@ FIXME: what other data could be good to have?
 
 # Modeling 
 
-Models were built and used to evaluate among the **decision tree** (CART), **random forest**, and **logistic regression** binary classifiers.  These approaches were used since they were covered in the coursework.
+Models were built and used to evaluate among the **decision tree** (CART), **random forest**, and **logistic regression** binary classifiers.  These approaches were used since they were covered in the coursework.  Full R code with comments and many other details can be found in [Modeling.Rmd](GiveMeSomeCredit/Modeling.Rmd). 
+
+## Data selection and model building
+
+Since the `cs-test.csv` dataset did not include values for the dependent variable, it was not usuable for validating the models built as to over- or under-fitting. Instead, the training data was split up to use for that purpose. The **`createDataPartition`** function from the **`caret`** [R package](https://cran.r-project.org/web/packages/caret/index.html) (`caret`: "Classification and Regression Training") was use to split samples representationally so that each sample would reflect the source sample on the proportion of the dependent variable being expressed.
+
+The `caret` package is very versatile; it contained wrappers and consistent parameterizations for each of the three types of classification models being explored.  See the [Modeling.Rmd](GiveMeSomeCredit/Modeling.Rmd) for full details.
+
+### First Iteration
 
 For the first iteration of the modeling, no features were de-selected and all original variables were used. Similarly, no constructed features were included in the modeling. The ROC (Receiver Operating Characteristic) curve comparing the three first-iteration models:
 
 ![First Iteration ROC](GiveMeSomeCredit/ROC1a.png "First Iteration ROC curve")
 
+The Random Forest model performs best in the first iteration, but the Logit (logistic regression) model keeps up, finally stalling around a *sensitivity* of `0.6` or so.
 
+### Second Iteration - feature selection
+
+For the second iteration model builds, the non-linear `DebtRatio` variable was removed, while `MonthlyExpenses` and `NetMonthlySurplus` were added.
+Also, the three "PastDue" variables were replaced with `ConsolidatedNumberOfDaysPastDue` that is supposed to reflect their linear sum.
+When the models were rebuilt with the changed features, the resulting ROC curve looked like:
+
+![Second Iteration ROC](GiveMeSomeCredit/ROC2a.png "Second Iteration ROC curve")
+
+In the second iteration, all three models performed at least slightly better on the ROC curve. The Random Forest model improving significantly, and the CART model showed the greatest performance improvement. The Random Forest performed the best overall again.
+
+# Extra Credit - Submit on Kaggle
+
+FIXME:
+
+[ExtraCredit.Rmd](GiveMeSomeCredit/ExtraCredit.Rmd)
+
+# Feedback to data providers
+
+- Try to be consistent on provided variables in a data source.  Numeric variables should be linear and defined consistently at least in the same variable. For example, `DebtRatio` was sometimes a placeholder, and other times it was used to represent monthly expense values.
 
 # Ideas for future research
 
-The Random Forest generation took a large amount of wall clock time to build its model, especially when using most of the training set. During iteration, the author was forced to greatly reduce to training set size in order to iterate experiments in a reasonable amount of time. Investigations into parallel computation for speedup would help on this aspect.
+- The Random Forest generation took a large amount of wall clock time to build its model, especially when using most of the training set. During iteration, the author was forced to greatly reduce to training set size in order to iterate experiments in a reasonable amount of time. Investigations into parallel computation for speedup would help on this aspect.
 
+- Come up with a better strategy to clip or cull outliers in the provided training and test data, or otherwise normalize them.  Some of the variables in the training data set had outliers of many orders of magnitude beyond the inter-quartile range.
 
 ### Boosting and Other Binary Classifiers
 
-The following binary classifiers<sup id="afootnote4">[4](#footnote4)</sup> were not covered in the course, but could be tried observe if any of them would create higher-performaing models:
+The following binary classifiers<sup id="afootnote4">[4](#footnote4)</sup> were not covered in the course, but could be tried to observe if any of them would create higher-performaing models:
 
 - Bayesian networks
 - Support vector machines
@@ -165,10 +194,10 @@ Like Random Forests, boosting is an ensemble method in that the overall fit is p
 
 1. Fit the data with a single tree.
 1. Crush the fit so that it does not work very well.
-1. Look at the part of y not captured by the crushed tree and fit a new tree to what is “left over”.
-1. Crush the new tree. Your new fit is the sum of the two trees.
-1. Repeat the above steps iteratively. At each iteration you fit “what is left over” with a tree, crush the tree, and then add the new crushed tree into the fit.
-1. Your final fit is the sum of many trees.
+1. Look at the part of `y` (dependent variable) not captured by the crushed tree and fit a new tree to what is “left over”.
+1. Crush the new tree. The new fit is the sum of the two trees.
+1. Repeat the above steps iteratively. At each iteration, a fit is made on “what is left over” with a tree, the tree is crushed, and then the new crushed tree is added into the fit.
+1. The final fit is the sum of many trees.
 
 
 
