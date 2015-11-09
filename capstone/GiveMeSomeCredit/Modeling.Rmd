@@ -387,7 +387,7 @@ cart_model2 = train(
   trControl=caret_train_control,
   tuneGrid = cp.grid
   )
-cart_model2
+# cart_model2
 
 # show the tree for the tuned .cp value 
 cart_model2.best.tree = cart_model2$finalModel
