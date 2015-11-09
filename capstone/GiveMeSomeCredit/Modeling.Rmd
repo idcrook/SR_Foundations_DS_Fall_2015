@@ -62,33 +62,19 @@ x_vars = c(
   'NumberOfTime60.89DaysPastDueNotWorse',
   'NumberOfDependents'
   )
-
-x_vars_features = c(
-  'RevolvingUtilizationOfUnsecuredLines',
-  'age',
-  'DebtRatio',
-  'MonthlyIncome',
-  'NumberOfOpenCreditLinesAndLoans',
-  'NumberRealEstateLoansOrLines',
-  'NumberOfDependents',
-  'MonthlyExpenses',
-  'NetMonthlySurplus',
-  'ConsolidatedNumberOfDaysPastDue'
-  )
-
-
 ```
 
 Out of the **`r formatC(nb_samples, format='d', big.mark=',')`** samples, the incidence of loan delinquency is **`r formatC(100 * sum(cs$SeriousDlqin2yrs == 'delinquent') / nb_samples, format='f', digits=2, big.mark=',')`%**.
 
 ## Split the data
 
+Since the "test" dataset provided in the competition did not include a value for the dependent variable (`SeriousDlqin2yrs`), the models created will be tested and validated with a subset of the training data.
 
-Let's split the data into a Training set and a Test set:
+First, the competition training data is split into a Training set and a Test set:
 
 ```{r Split data}
 # lower the proportion of training to have models build faster. ideally would
-# set this higher to ~0.8, but that takes hours to build the random forest
+# set this higher to ~0.8, but that takes hours to train the random forest model
 train_proportion <- .2
 train_indices <- createDataPartition(
   y=cs$SeriousDlqin2yrs,
@@ -99,7 +85,7 @@ cs_train <- cs[train_indices, ]
 cs_test <- cs[-train_indices, ]
 ```
 
-Let's also further split a bit of data from the Training set as a Validation set for the purpose of estimating Out-Of-Sample performance metrics:
+Then the training set is further split from the Training set as a Validation set for the purpose of estimating Out-Of-Sample performance metrics:
 
 ```{r Further split training data}
 valid_proportion_of_train <- 1 / 3
@@ -122,7 +108,7 @@ cs\_valid    | `r nrow(cs_valid)`
 
 ## Classification Models
 
-Let's train 3 types of classification models: a Classification Tree, a Random Forest, and a Logistic Regression.
+There will be built three types of classification models: a Classification (CART) Tree, a Random Forest, and a Logistic Regression.
 
 
 ```{r caret parameters}
@@ -233,9 +219,9 @@ log_reg_oos_performance <- bin_classif_eval(
 
 ### Plot of ROC curves
 
-``` {r Plot ROC, message=FALSE, warning=FALSE, echo=FALSE}
-plot(x=1 - rf_oos_performance$specificity,
-    y=rf_oos_performance$sensitivity,
+``` {r Plot ROC 1st iter, message=FALSE, warning=FALSE, echo=FALSE}
+plot(x = 1 - rf_oos_performance$specificity,
+     y = rf_oos_performance$sensitivity,
      type = "l", col='darkgreen', lwd=2,
      xlim = c(0., 1.), ylim = c(0., 1.),
      main = "ROC Curves (Validation Data) - 1st Iter",
@@ -255,25 +241,6 @@ dev.copy(png,"ROC1a.png",width=6,height=4.5,units="in",res=200)
 dev.off()
 ```
 
-The Random Forest seems to have the best prediction characteristics in the first iteration.
-
-# ROC curve
-
-
-``` {r}
-# library(ROCR)
-# 
-# cart_modelROC = predict(cart_model.best.tree, cs_valid[ , x_vars])
-# cart_modelROC
-# pred = prediction(cart_modelROC[,1], cs_valid$SeriousDlqin2yrs)
-# perf = performance(pred, "tpr", "fpr")
-# plot(perf)
-# abline(a=0,b=1,lty=2,col=8)
-# 
-# auc = as.numeric(performance(pred, "auc")@y.values)
-# auc
-```
-
 ### predictions
 
 Let us choose, subjectively, a sensistivity threshold of **`75`%**, meaning we'd like to catch **75%** of the delinquency cases with our model.
@@ -284,7 +251,6 @@ Let us choose, subjectively, a sensistivity threshold of **`75`%**, meaning we'd
 log_reg_sensitivity_threshold <- .75
 log_reg_i <- min(which(log_reg_oos_performance$sensitivity < log_reg_sensitivity_threshold)) - 1
 log_reg_selected_prob_threshold <- prob_thresholds[log_reg_i]
-# log_reg_selected_prob_threshold
 ```
 
 The selected decision threshold is **`r formatC(log_reg_selected_prob_threshold, format='f', digits=3)`** &ndash; meaning when the logistic regression model is used to predict on new data, it will predict "Delinquent" when the predicted probability exceeds that threshold.
@@ -295,17 +261,43 @@ The selected decision threshold is **`r formatC(log_reg_selected_prob_threshold,
 rf_sensitivity_threshold <- .75
 rf_i <- min(which(rf_oos_performance$sensitivity < rf_sensitivity_threshold)) - 1
 rf_selected_prob_threshold <- prob_thresholds[rf_i]
-# rf_selected_prob_threshold
 ```
 
 The selected decision threshold for the Random Forest model is **`r formatC(rf_selected_prob_threshold, format='f', digits=3)`**.
 
-# Testing Performance of Model
+## predictions
+
+A sensistivity threshold of **`75`%** was chosen, subjectively, meaning it is desired of the model parameters to catch **75%** of the *actual* delinquency cases.
+
+#### Logistic regression
+
+```{r}
+log_reg_sensitivity_threshold <- .75
+log_reg_i <- min(which(log_reg_oos_performance$sensitivity < log_reg_sensitivity_threshold)) - 1
+log_reg_selected_prob_threshold <- prob_thresholds[log_reg_i]
+```
+
+The selected decision threshold is **`r formatC(log_reg_selected_prob_threshold, format='f', digits=3)`** &ndash; meaning when the logistic regression model is used to predict on new data, it will predict "Delinquent" when the predicted probability exceeds that threshold.
+
+#### Random forest
+
+```{r}
+rf_sensitivity_threshold <- .75
+rf_i <- min(which(rf_oos_performance$sensitivity < rf_sensitivity_threshold)) - 1
+rf_selected_prob_threshold <- prob_thresholds[rf_i]
+```
+
+The selected decision threshold for the Random Forest model is **`r formatC(rf_selected_prob_threshold, format='f', digits=3)`**.
+
+
+## Testing Performance of Model
 
 Calculate the performance on the test split of data from the original dataset on the respective model.
+First a helper function to display Accuracy, Sensitivity, and Specificity is created.
 
-``` {r }
+``` {r display_accu_sens_spec helper, echo=FALSE}
 
+# helper function to display Accuracy, Sensitivity, and Specificity
 display_accu_sens_spec <- function(iperf) {
   if (is.numeric(iperf)) {
     s1 <- 
@@ -343,11 +335,11 @@ display_accu_sens_spec(log_reg_oos_performance[log_reg_i, ])
 display_accu_sens_spec(log_reg_test_performance)
 ```
 
-The performance is not the greatest, but the test split performs similar to its expected performance.
+The *accuracy* is not great, but the test split data performance is similar to its expected performance.
 
 ### Random Forest model 
 
-Evaluating the performance of the selected logit model, with a decision threshold at **`r formatC(rf_selected_prob_threshold, format='f', digits=3)`**:
+Evaluating the performance of the selected Random Forest model, with a decision threshold at **`r formatC(rf_selected_prob_threshold, format='f', digits=3)`**:
 
 ```{r}
 rf_test_pred_probs <- predict(
@@ -364,3 +356,231 @@ display_accu_sens_spec(rf_test_performance)
 ```
 
 The Random Forest model has a higher *accuracy* at the chosen sensitivity threshold. The performance comparison on the test slice is in the expected performance ballpark, within 1% or so.
+
+So the models seem to be able to predict reasonably for "new" data and are not overtrained.
+
+# Build models using features variables
+
+Using some constructed feature variables, the classifier models are rebuilt.
+
+``` {r}
+# Remove the non-linear DebtRatio and add MonthlyExpenses and NetMonthlySurplus.
+# Replace the three deliquency variables with the single
+# ConsolidatedNumberOfDaysPastDue
+x_vars_features = c(
+  'RevolvingUtilizationOfUnsecuredLines',
+  'age',
+  'MonthlyIncome',
+  'MonthlyExpenses',
+  'NetMonthlySurplus',
+  'NumberOfOpenCreditLinesAndLoans',
+  'NumberRealEstateLoansOrLines',
+  'NumberOfDependents',
+  'ConsolidatedNumberOfDaysPastDue'
+  )
+```
+
+### CART 2nd iter
+
+```{r CART model 2nd iter, message=FALSE, warning=FALSE}
+
+# cp values
+cp.grid = expand.grid( .cp = seq(0.001, 0.010, 0.001))
+
+cart_model2 = train(
+  x=cs_train[, x_vars_features],
+  y=cs_train$SeriousDlqin2yrs,
+  method='rpart',     # CART
+  metric=caret_optimized_metric,
+  trControl=caret_train_control,
+  tuneGrid = cp.grid
+  )
+cart_model2
+
+# show the tree for the tuned .cp value 
+cart_model2.best.tree = cart_model2$finalModel
+prp(cart_model2.best.tree)
+```
+
+
+### Random Forest 2nd iter
+
+```{r Random forest 2nd iter, message=FALSE, warning=FALSE}
+B <- 600
+
+# http://topepo.github.io/caret/Random_Forest.html
+rf_model2 <- train(
+  x=cs_train[, x_vars_features],
+  y=cs_train$SeriousDlqin2yrs,
+  method='rf',        # Random Forest
+  metric=caret_optimized_metric,
+  ntree=B,            # number of trees in the Random Forest
+  nodesize=100,       # minimum node size set small enough to allow for complex trees,
+                      # but not so small as to require too large B to eliminate high variance
+  importance=TRUE,    # evaluate importance of predictors
+  keep.inbag=TRUE,
+  trControl=caret_train_control,
+  tuneGrid=NULL)
+```
+
+### Logistic Regression 2nd iter
+
+```{r logit 2nd iter, message=FALSE, warning=FALSE}
+log_reg_model2 <- train(
+  x=cs_train[, x_vars_features],
+  y=cs_train$SeriousDlqin2yrs,
+  preProcess=c('center', 'scale'), 
+  method='plr',       # Penalized Logistic Regression
+  metric=caret_optimized_metric,
+  trControl=caret_train_control,
+  tuneGrid=expand.grid(
+    lambda=0,   # weight penalty parameter
+    cp='aic'))     # complexity parameter (AIC / BIC)
+```
+
+## Model prediction comparison
+
+In order to see which model seems to have the best prediction characteristics, create and chart ROC curves for each model based on the sample test data we kept in reserve for validation.
+
+``` {r Create OOS predictions 2nd iter, echo=FALSE}
+
+cart2_pred_probs <- predict(
+  cart_model2, newdata=cs_valid[ , x_vars_features], type='prob')
+cart2_oos_performance <- bin_classif_eval(
+  cart2_pred_probs$delinquent, cs_valid$SeriousDlqin2yrs, thresholds=prob_thresholds)
+
+rf2_pred_probs <- predict(
+  rf_model2, newdata=cs_valid[ , x_vars_features], type='prob')
+rf2_oos_performance <- bin_classif_eval(
+  rf2_pred_probs$delinquent, cs_valid$SeriousDlqin2yrs, thresholds=prob_thresholds)
+
+log_reg2_pred_probs <- predict(
+  log_reg_model2, newdata=cs_valid[, x_vars_features], type='prob')
+log_reg2_oos_performance <- bin_classif_eval(
+  log_reg2_pred_probs$delinquent, cs_valid$SeriousDlqin2yrs, thresholds=prob_thresholds)
+```
+
+
+### Plot of ROC curves
+
+``` {r Plot ROC 2nd iter, message=FALSE, warning=FALSE, echo=FALSE}
+plot(x = 1 - rf2_oos_performance$specificity,
+     y = rf2_oos_performance$sensitivity,
+     type = "l", col='darkgreen', lwd=2,
+     xlim = c(0., 1.), ylim = c(0., 1.),
+     main = "ROC Curves (Validation Data) - 2nd Iter",
+     xlab = "1 - Specificity", ylab = "Sensitivity")
+abline(a=0,b=1,lty=2,col=8)
+lines(x=1 - cart2_oos_performance$specificity,
+      y=cart2_oos_performance$sensitivity,
+      col='red', lwd=2)
+lines(x=1 - log_reg2_oos_performance$specificity,
+      y=log_reg2_oos_performance$sensitivity,
+      col='green', lwd=2)
+legend('right', c('Random Forest', 'Logistic Regression', 'CART'), 
+    lty=1, col=c('darkgreen', 'green', 'red'), lwd=2.)
+
+# save a plot to PNG
+dev.copy(png,"ROC2a.png",width=6,height=4.5,units="in",res=200)
+dev.off()
+```
+
+The CART model does significantly better this time using the engineered features than it did with the original variables, even matching or exceeding the Random Forest at higher specificity.  The logisitic regression eventual catches up to the CART model at higher sensitivity. Again, however, the Random Forest model has the highest AUC among the three models.
+
+
+## Predictions performance on 2nd iter
+
+Again, a sensistivity threshold of **`75`%** is chosen.
+
+#### Logistic regression
+
+```{r echo=FALSE}
+cart2_sensitivity_threshold <- .75
+cart2_i <- min(which(cart2_oos_performance$sensitivity < cart2_sensitivity_threshold)) - 1
+cart2_selected_prob_threshold <- prob_thresholds[cart2_i]
+```
+
+The selected decision threshold is **`r formatC(cart2_selected_prob_threshold, format='f', digits=3)`**.
+
+
+#### Logistic regression
+
+```{r echo=FALSE}
+log_reg2_sensitivity_threshold <- .75
+log_reg2_i <- min(which(log_reg2_oos_performance$sensitivity < log_reg2_sensitivity_threshold)) - 1
+log_reg2_selected_prob_threshold <- prob_thresholds[log_reg2_i]
+```
+
+The selected decision threshold is **`r formatC(log_reg2_selected_prob_threshold, format='f', digits=3)`**.
+
+#### Random forest
+
+```{r echo=FALSE}
+rf2_sensitivity_threshold <- .75
+rf2_i <- min(which(rf2_oos_performance$sensitivity < rf_sensitivity_threshold)) - 1
+rf2_selected_prob_threshold <- prob_thresholds[rf2_i]
+```
+
+The selected decision threshold for the Random Forest model is **`r formatC(rf2_selected_prob_threshold, format='f', digits=3)`**.
+
+## Evaluating 2nd iteration model performance
+
+### Logit (Logistic regression) model  2nd iter
+
+Evaluating the performance of the selected logit model, with a decision threshold at **`r formatC(log_reg2_selected_prob_threshold, format='f', digits=3)`**:
+
+```{r}
+log_reg2_test_pred_probs <- predict(
+  log_reg_model2, newdata=cs_test[, x_vars_features], type='prob')
+
+log_reg2_test_performance <- bin_classif_eval(
+  log_reg2_test_pred_probs$delinquent, cs_test$SeriousDlqin2yrs, thresholds=log_reg2_selected_prob_threshold)
+
+# expected predictive performance 
+display_accu_sens_spec(log_reg2_oos_performance[log_reg2_i, ])
+
+# tested performance 
+display_accu_sens_spec(log_reg2_test_performance)
+```
+
+The *accuracy* degrades slightly over the first iteration model, and the test split data performance is similar to its expected performance.
+
+### Random Forest model 2nd iter
+
+Evaluating the performance of the selected Random Forest model, with a decision threshold at **`r formatC(rf2_selected_prob_threshold, format='f', digits=3)`**:
+
+```{r}
+rf2_test_pred_probs <- predict(
+  rf_model2, newdata=cs_test[, x_vars_features], type='prob')
+
+rf2_test_performance <- bin_classif_eval(
+  rf2_test_pred_probs$delinquent, cs_test$SeriousDlqin2yrs, thresholds=rf2_selected_prob_threshold)
+
+# expected predicted performance 
+display_accu_sens_spec(rf2_oos_performance[rf2_i, ])
+
+# tested performance 
+display_accu_sens_spec(rf2_test_performance)
+```
+
+The Random Forest model has a higher *accuracy* at the chosen sensitivity threshold. The performance comparison on the test slice is in the expected performance ballpark, within 1% or so.
+
+### CART model 2nd iter
+
+Evaluating the performance of the selected CART model, with a decision threshold at **`r formatC(rf2_selected_prob_threshold, format='f', digits=3)`**:
+
+```{r}
+cart2_test_pred_probs <- predict(
+  cart_model2, newdata=cs_test[, x_vars_features], type='prob')
+
+cart2_test_performance <- bin_classif_eval(
+  cart2_test_pred_probs$delinquent, cs_test$SeriousDlqin2yrs, thresholds=cart2_selected_prob_threshold)
+
+# expected predicted performance 
+display_accu_sens_spec(cart2_oos_performance[cart2_i, ])
+
+# tested performance 
+display_accu_sens_spec(cart2_test_performance)
+```
+
+The CART model is in the running this time. The prediction performance comparison on the test slice is reasonable.
