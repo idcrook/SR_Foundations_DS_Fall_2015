@@ -267,12 +267,12 @@ On the final [leaderboard at Kaggle](https://www.kaggle.com/c/GiveMeSomeCredit/l
 
 ![CART Ranking](CART-model-placement.png "CART submission ranking")
 
-It's AUC was scored at **`0.702828`**. It would have ranked at `820`.
+Its AUC was scored at **`0.702828`**. It would have ranked at `820`.
 
 ### The Random Forest submission
 
 ![RF Ranking](RF-model-placement.png "RF submission ranking")
 
-It's AUC was scored at **`0.794789`**. It would have ranked at `772`. This placement is only better than **`r formatC(100 * (1  - 772/925), format='f', digits=2)`** of competitor team entries, or about one-sixth of the entries.
+Its AUC was scored at **`0.794789`**. It would have ranked at `772`. This placement is only better than **`r formatC(100 * (1  - 772/925), format='f', digits=2)`** of competitor team entries, or about one-sixth of the entries.
 
 Getting an increase in AUC of **`r formatC(0.869558 - 0.794789, format='f', digits=6)`** would have been required to win the competition.
