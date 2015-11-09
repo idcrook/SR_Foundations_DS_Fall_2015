@@ -8,6 +8,7 @@ Project based on Kaggle competition [GiveMeSomeCredit](https://www.kaggle.com/c/
 - Code: [(directory)](https://github.com/dpcrook/SR_Foundations_DS_Fall_2015/tree/master/capstone/GiveMeSomeCredit)
   - [EDA.Rmd](GiveMeSomeCredit/EDA.Rmd) - output [.html](https://dpcrook.github.io/SR_Foundations_DS_Fall_2015/capstone/GiveMeSomeCredit/EDA.html) : Data exploration and cleanup
   - [Modeling.Rmd](GiveMeSomeCredit/Modeling.Rmd) - output [.html](https://dpcrook.github.io/SR_Foundations_DS_Fall_2015/capstone/GiveMeSomeCredit/Modeling.html) : Data modeling, feature selection, and prediction
+  - (WIP) [ExtraCredit.Rmd](GiveMeSomeCredit/ExtraCredit.Rmd) : Code used to generate a prediction entry for submission to Kaggle site
 
 ## Other Related course files
 
