@@ -154,11 +154,13 @@ Something that seemed missing in the datasets were borrower total assets and tot
 
 # Modeling 
 
-Models were built and used to evaluate among the **decision tree** (CART), **random forest**, and **logistic regression** binary classifiers.  These approaches were selected since they were the ones covered in the coursework.  Full R code with comments and many other details on the model builds and evaluation can be found in [Modeling.Rmd](GiveMeSomeCredit/Modeling.Rmd). 
+Models were built and used to evaluate among the **decision tree** (CART), **random forest**, and **logistic regression** binary classifiers.  These approaches were selected since they were the ones covered in the coursework.  Full R code with comments and many other details on the model builds and evaluation can be found in [Modeling.Rmd](GiveMeSomeCredit/Modeling.Rmd) (.html output: [Modeling.html](https://dpcrook.github.io/SR_Foundations_DS_Fall_2015/capstone/GiveMeSomeCredit/Modeling.html)). 
 
 ## Data selection and model building
 
-Since the `cs-test.csv` dataset did not include values for the dependent variable `SeriousDlqin2yrs`, it was not usable for validating the models.  Specifically the models would want to avoid conditions of over- or under-fitting. So instead, the training dataset was split up to use for purposes of model validation and testing. The **`createDataPartition`** function from the **`caret`** [R package](https://cran.r-project.org/web/packages/caret/index.html) (`caret`: "Classification and Regression Training") was use to split samples representationally so that each sample would reflect the source sample on the proportion of the dependent variable being expressed.
+Since the `cs-test.csv` dataset did not include values for the dependent variable `SeriousDlqin2yrs`, it was not usable for validating the models created from the training data. Instead, the training dataset was split up to use for purposes of model validation and testing.
+
+The **`createDataPartition`** function from the **`caret`** [R package](https://cran.r-project.org/web/packages/caret/index.html) (`caret`: "Classification and Regression Training") was use to split samples representationally (and randomly) so that each split sample would reflect the source sample on the proportion of the dependent variable being expressed.
 
 #### CART (Classification And Regression Tree) model
 
@@ -170,17 +172,17 @@ A standard logistic regression model was built, tuned by complexity parameter `a
 
 #### Random Forest model
 
-A random forest model was created with the number of trees set to `600` and nodesize of `100`.  These values were reasonable considering the split training sample size.
+A random forest model was created with the number of trees set to `600` and nodesize of `100`.  These values were reasonable considering the training sample split size.
 
 #### `caret` and cross-validation
 
-The `caret` package is very versatile; it contains wrappers and consistent parameterizations for each of the three types of classification models being explored and a whole host of other modeling techniques not discussed here.  See the [Modeling.Rmd](GiveMeSomeCredit/Modeling.Rmd) for full details on how it was used in this project.
+The `caret` package is very versatile; it contains wrappers and consistent parameterizations for each of the three types of classification models being explored and a whole host of other modeling techniques not discussed here.  It simplified support for running different classfication model methods.  See the [Modeling.Rmd](GiveMeSomeCredit/Modeling.Rmd) for full details on how it was used in this project.
 
-For cross-validation, the setting used was repeated k-fold cross validation, where `k` was `5` and `repeats` was set to `2`.
+For cross-validation, the setting used was repeated k-fold cross validation, where `k` was `5` and `repeats` was set to `2`.  This is done in an attempt to avoid over-fitting the model to the model training dataset.
 
 ### First Iteration
 
-For the first iteration of the modeling, no features were de-selected and all original variables were used. Similarly, no constructed features were included in the modeling. The ROC (Receiver Operating Characteristic) curve comparing the three first-iteration models:
+For the first iteration of the modeling, no features were de-selected and all original variables from the dataset were used. Similarly, no constructed features were included in the modeling. The ROC (Receiver Operating Characteristic) curve comparing the three first-iteration models:
 
 ![First Iteration ROC](GiveMeSomeCredit/ROC1a.png "First Iteration ROC curve")
 
@@ -209,27 +211,33 @@ A CART model and a Random Forest model were built. The models were trained using
 
 ### Kaggle submission results
 
-The Random Forest model parameters were changed to reflect a larger number of observations in the training set for the first Random Forest submission.  Even so the RF model took multiple hours to build on the author's workstation. 
+The Random Forest model parameters were changed to reflect a larger number of observations in the training set for the first Random Forest submission.  Even so, the RF model took multiple hours to build on the author's workstation. 
 
-Included here is the best scored entry. Full details can me found in [ExtraCredit.html](https://dpcrook.github.io/SR_Foundations_DS_Fall_2015/capstone/GiveMeSomeCredit/ExtraCredit.html))
+Full details can be found in [ExtraCredit.html](https://dpcrook.github.io/SR_Foundations_DS_Fall_2015/capstone/GiveMeSomeCredit/ExtraCredit.html).
 
+**FIXME: Include image** and AUC score
 
 # Ideas for future research
 
 - The Random Forest generation took a large amount of wall clock time to build its model, especially when using most of the training set. During iteration, the author was forced to greatly reduce to training set size in order to iterate experiments in a reasonable amount of time. Investigations into parallel computation for speedup would help on this aspect.
 
-- Come up with a better strategy to clip or cull outliers in the provided training and test data, or otherwise normalize them.  Some of the variables in the training data set had outliers of many orders of magnitude beyond the inter-quartile range.  For example, in `RevolvingUtilizationOfUnsecuredLines`, the extreme outliers should have been clipped.
+- Come up with a better strategy to clip or cull extreme outliers in the provided training and test data, or otherwise normalize them.  Some of the variables in the training data set had outliers of many orders of magnitude beyond the inter-quartile range.  For example, in `RevolvingUtilizationOfUnsecuredLines` the extreme outliers should have been clipped.
 
-- Run experiments on the best ways of filling in **NA** values for this dataset.  Compare methods of imputation and other traditional ways , and perhaps impute the missing values in `MonthlyIncome` and `NumberOfDependents` 
+- Run experiments on the best ways of filling in **NA** values for this dataset.  Compare methods of imputation and other traditional ways.
+  - Perhaps impute the missing values in `MonthlyIncome` and `NumberOfDependents` using *both* the included training and test datasets as one combined sample. The test dataset also had **NA**s for these variables, and the author ended up *imputing* the values separately in order to make predictions on the test dataset for the extra credit portion.
 
 
 ### Boosting and Other Binary Classifiers
 
-The following binary classifiers<sup id="afootnote4">[4](#footnote4)</sup> were not covered in the course, but could be tried to observe if any of them would create higher-performaing models:
+The following binary classifiers<sup id="afootnote4">[4](#footnote4)</sup> were not covered in the course, but could be tried to observe if any of them would create higher-performing models:
 
 - Bayesian networks
 - Support vector machines
 - Neural networks
+
+Many kaggle competitors employ "ensemble" method where multiple machine learning models are built and *combined* for an overall output.
+
+#### Boosting
 
 Another technique, boosting, could additionally be used to improve upon the model result. This method was not covered in course materials, but can often lead to better predictive models.
 
