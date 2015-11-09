@@ -103,6 +103,24 @@ cart_modelxc.best.tree = cart_modelxc$finalModel
 prp(cart_modelxc.best.tree)
 ```
 
+### Random Forest xc
+
+```{r Random forest xc, message=FALSE, warning=FALSE}
+B <- 600
+
+rf_modelxc <- train(
+  x=cs[, x_vars_features],
+  y=cs$SeriousDlqin2yrs,
+  method='rf',        # Random Forest
+  metric=caret_optimized_metric,
+  ntree=B,            # number of trees in the Random Forest
+  nodesize=300,       # minimum node size set small enough to allow for complex trees,
+                      # but not so small as to require too large B to eliminate high variance
+  importance=TRUE,    # evaluate importance of predictors
+  keep.inbag=TRUE,
+  trControl=caret_train_control,
+  tuneGrid=NULL)
+```
 
 # competition test data for predictions
 
@@ -212,10 +230,27 @@ cs.test$NumberOfDependents <- imputedxc$NumberOfDependents
 
 # generate predictions
 
+CART 
+
 ``` {r}
 cartxc_test_pred_probs <- predict(
   cart_modelxc, newdata=cs.test[, x_vars_features], type='prob')
+summary(cartxc_test_pred_probs)
 
+results <- data.frame(Id = 1:nrow(cs.test), Probability = cartxc_test_pred_probs[, 2])
+write.table(results, "cartEntry.csv", quote=F, row.names=F, sep=",")
+```
+
+Random Forest 
+
+``` {r}
+rfxc_test_pred_probs <- predict(
+  rf_modelxc, newdata=cs.test[, x_vars_features], type='prob')
+summary(rfxc_test_pred_probs)
+
+results <- data.frame(Id = 1:nrow(cs.test), Probability = rfxc_test_pred_probs[, 2])
+str(results)
+write.table(results, "rfEntry.csv", quote=F, row.names=F, sep=",")
 
 ```
 
