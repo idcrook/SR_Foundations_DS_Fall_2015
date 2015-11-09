@@ -15,6 +15,10 @@ View output [Modeling.html](https://dpcrook.github.io/SR_Foundations_DS_Fall_201
 ```{r Setup, message=FALSE, warning=FALSE, echo=FALSE}
 setwd("~/projects/Classes/FoundationsOfDataScience_sliderule/github/capstone/GiveMeSomeCredit")
 
+# need these for decision tree graph
+library(rpart)
+library(rpart.plot)
+
 suppressMessages(library(dplyr)) # summarise
 library(caret)
 library(data.table)
