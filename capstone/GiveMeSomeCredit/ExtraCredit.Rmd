@@ -93,7 +93,7 @@ cart_modelxc = train(
   trControl=caret_train_control,
   tuneGrid = cp.gridxc
   )
-# cart_modelxc
+cart_modelxc
 
 # show the tree for the tuned .cp value 
 cart_modelxc.best.tree = cart_modelxc$finalModel
@@ -120,12 +120,97 @@ nbt_samples <- nrow(cs.test)
 nbt_samples
 
 str(cs.test)
+summary(cs.test)
+```
+
+clean up the data, and impute missing values
+
+``` {r}
+
+# create a derived variable called MonthlyExpenses taking the above NA
+# disposition into account
+cs.test$MonthlyExpenses <- ifelse(is.na(cs.test$MonthlyIncome),
+                             1 * cs.test$DebtRatio,
+                             cs.test$MonthlyIncome * cs.test$DebtRatio)
+
+# create another derived variable called NetMonthlySurplus
+cs.test$NetMonthlySurplus <- ifelse(is.na(cs.test$MonthlyIncome),
+                             0 - cs.test$MonthlyExpenses,
+                             cs.test$MonthlyIncome - cs.test$MonthlyExpenses)
+
+
+# Convert these to NA, and the variable to numeric
+cs.test$NumberOfTime30.59DaysPastDueNotWorse <- as.numeric(ifelse(cs.test$NumberOfTime30.59DaysPastDueNotWorse >= 96, NA,
+                                                  cs.test$NumberOfTime30.59DaysPastDueNotWorse))
+
+cs.test$NumberOfTime60.89DaysPastDueNotWorse <- as.numeric(ifelse(cs.test$NumberOfTime60.89DaysPastDueNotWorse >= 96, NA,
+                                                  cs.test$NumberOfTime60.89DaysPastDueNotWorse))
+
+cs.test$NumberOfTimes90DaysLate <- as.numeric(ifelse(cs.test$NumberOfTimes90DaysLate >= 96, NA,
+                                     cs.test$NumberOfTimes90DaysLate))
+
+
+
+
+
+# convert the NAs back to their variable's mean
+m30 <- mean(cs.test$NumberOfTime30.59DaysPastDueNotWorse, na.rm = TRUE)
+m60 <- mean(cs.test$NumberOfTime60.89DaysPastDueNotWorse, na.rm = TRUE)
+m90 <- mean(cs.test$NumberOfTimes90DaysLate, na.rm = TRUE)
+
+cs.test$NumberOfTime30.59DaysPastDueNotWorse <- ifelse(is.na(cs.test$NumberOfTime30.59DaysPastDueNotWorse),
+                                                  m30,
+                                                  cs.test$NumberOfTime30.59DaysPastDueNotWorse)
+
+cs.test$NumberOfTime60.89DaysPastDueNotWorse <- ifelse(is.na(cs.test$NumberOfTime60.89DaysPastDueNotWorse),
+                                                  m60,
+                                                  cs.test$NumberOfTime60.89DaysPastDueNotWorse)
+
+cs.test$NumberOfTimes90DaysLate <- ifelse(is.na(cs.test$NumberOfTimes90DaysLate),
+                                     m90,
+                                     cs.test$NumberOfTimes90DaysLate)
+
+# create the ConsolidatedNumberOfDaysPastDue
+cs.test$ConsolidatedNumberOfDaysPastDue <- (cs.test$NumberOfTime30.59DaysPastDueNotWorse * 30) +
+  (cs.test$NumberOfTime60.89DaysPastDueNotWorse * 60) +
+  (cs.test$NumberOfTimes90DaysLate * 90)
+
+summary(cs.test)
+```
+
+# run imputation
+
+`MonthlyIncome` and `NumberOfDependents` contain **NA**s
+
+``` {r}
+set.seed(144)
+
+# Multiple imputation
+simplifiedxc = cs[c("age", 
+  'RevolvingUtilizationOfUnsecuredLines',
+  'MonthlyIncome',
+  'MonthlyExpenses',
+  'NetMonthlySurplus',
+  'NumberOfOpenCreditLinesAndLoans',
+  'NumberRealEstateLoansOrLines',
+  'NumberOfDependents',
+  'ConsolidatedNumberOfDaysPastDue'
+  )]
+
+### This takes a long time so save the results
+imputedxc = complete(mice(simplifiedxc))
+save(imputedxc,file="imputed_testxc.Rda")
+load("imputed_testxc.Rda")  # load value in R object 'imputedxc'
+
+# save results
+cs.test$MonthlyIncome <- imputedxc$MonthlyIncome
+cs.test$NumberOfDependents <- imputedxc$NumberOfDependents
 ```
 
 
 ``` {r}
-# rf_test_pred_probs <- predict(
-#   rf_model, newdata=cs.test[, x_vars_features], type='prob')
+cartxc_test_pred_probs <- predict(
+  cart_modelxc, newdata=cs.test[, x_vars_features], type='prob')
 
 
 ```
