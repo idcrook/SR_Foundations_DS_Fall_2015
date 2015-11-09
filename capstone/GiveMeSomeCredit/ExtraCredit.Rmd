@@ -1,0 +1,127 @@
+---
+title: "Extra Credit - Kaggle Entry Scoring"
+author: "David Crook"
+date: "November 8, 2015"
+output: html_document
+---
+
+
+# Extra credit : Kaggle competition entry
+
+
+```{r Setup, message=FALSE, warning=FALSE, echo=FALSE}
+setwd("~/projects/Classes/FoundationsOfDataScience_sliderule/github/capstone/GiveMeSomeCredit")
+
+library(caret)
+library(data.table)
+
+source('EvaluationMetrics.R')
+```
+
+``` {r Set seed}
+# set randomizer's seed
+set.seed(142)
+```
+
+Use Random Forest with model to make a prediction set.
+
+Read in training data:
+
+``` {r}
+
+# read in cleaned version saved by EDA.Rmd
+cs <- read.csv("cs-training-cleaned.csv")
+
+# restore levels to factors
+cs$SeriousDlqin2yrs <- factor(cs$SeriousDlqin2yrs, 
+                              levels = c(0, 1), labels = c("ok", "delinquent"))
+#str(cs)
+```
+
+
+# build models
+
+## Classification Models
+
+There will be built three types of classification models: a Classification (CART) Tree, a Random Forest, and a Logistic Regression.
+
+
+```{r caret parameters}
+
+# set up some turning and cross-validation parameters that will be used across
+# the classifiers
+caret_optimized_metric <- 'logLoss'   # equivalent to 1 / 2 of Deviance
+
+caret_train_control <- trainControl(
+  classProbs=TRUE,             # compute class probabilities
+  summaryFunction=mnLogLoss,   # equivalent to 1 / 2 of Deviance
+  method='repeatedcv',         # repeated Cross Validation
+  number=5,                    # 5 folds
+  repeats=2,                   # 2 repeats
+  allowParallel=FALSE)
+
+x_vars_features = c(
+  'RevolvingUtilizationOfUnsecuredLines',
+  'age',
+  'MonthlyIncome',
+  'MonthlyExpenses',
+  'NetMonthlySurplus',
+  'NumberOfOpenCreditLinesAndLoans',
+  'NumberRealEstateLoansOrLines',
+  'NumberOfDependents',
+  'ConsolidatedNumberOfDaysPastDue'
+  )
+```
+
+### CART
+
+```{r CART model extra credit, message=FALSE, warning=FALSE}
+
+# cp values
+cp.gridxc = expand.grid( .cp = seq(0.001, 0.02, 0.0002))
+
+cart_modelxc = train(
+  x=cs_train[, x_vars],
+  y=cs_train$SeriousDlqin2yrs,
+  method='rpart',     # CART
+  metric=caret_optimized_metric,
+  trControl=caret_train_control,
+  tuneGrid = cp.gridxc
+  )
+cart_modelxc
+
+# show the tree for the tuned .cp value 
+cart_modelxc.best.tree = cart_modelxc$finalModel
+prp(cart_modelxc.best.tree)
+```
+
+
+# competition test data for predictions
+
+Read in test data:
+
+``` {r}
+
+cs.test <- read.csv("cs-test.csv")
+str(cs.test)
+
+# Gets rid of the "X" column
+cs.test <- rbind(cs.test)[ , -1]  
+
+# convert SeriousDlqin2yrs in testdata to numeric
+cs.test$SeriousDlqin2yrs <- as.numeric(cs.test$SeriousDlqin2yrs)
+
+nbt_samples <- nrow(cs.test)
+nbt_samples
+
+str(cs.test)
+```
+
+
+``` {r}
+# rf_test_pred_probs <- predict(
+#   rf_model, newdata=cs.test[, x_vars_features], type='prob')
+
+
+```
+
