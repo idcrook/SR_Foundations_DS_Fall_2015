@@ -189,7 +189,7 @@ summary(cs.test)
 set.seed(144)
 
 # Multiple imputation
-simplifiedxc = cs[c("age", 
+simplifiedxc = cs.test[c("age", 
   'RevolvingUtilizationOfUnsecuredLines',
   'MonthlyIncome',
   'MonthlyExpenses',
