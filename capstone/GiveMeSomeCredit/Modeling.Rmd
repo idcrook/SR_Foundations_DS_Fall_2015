@@ -15,10 +15,6 @@ View output [Modeling.html](https://dpcrook.github.io/SR_Foundations_DS_Fall_201
 ```{r Setup, message=FALSE, warning=FALSE, echo=FALSE}
 setwd("~/projects/Classes/FoundationsOfDataScience_sliderule/github/capstone/GiveMeSomeCredit")
 
-# Load CART packages
-library(rpart)
-library(rpart.plot)
-
 suppressMessages(library(dplyr)) # summarise
 library(caret)
 library(data.table)
@@ -42,11 +38,7 @@ cs <- read.csv("cs-training-cleaned.csv")
 # restore levels to factors
 cs$SeriousDlqin2yrs <- factor(cs$SeriousDlqin2yrs, 
                               levels = c(0, 1), labels = c("ok", "delinquent"))
-
-cs.test <- read.csv("cs-test.csv")
-
 #str(cs)
-#str(cs.test)
 
 nb_samples <- nrow(cs)
 
@@ -584,3 +576,4 @@ display_accu_sens_spec(cart2_test_performance)
 ```
 
 The CART model is in the running this time. The prediction performance comparison on the test slice is reasonable.
+
