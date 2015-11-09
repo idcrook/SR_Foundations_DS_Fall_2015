@@ -488,7 +488,7 @@ The CART model does significantly better this time using the engineered features
 
 Again, a sensistivity threshold of **`75`%** is chosen.
 
-#### Logistic regression
+#### CART
 
 ```{r echo=FALSE}
 cart2_sensitivity_threshold <- .75
@@ -563,7 +563,7 @@ The Random Forest model has a higher *accuracy* at the chosen sensitivity thresh
 
 ### CART model 2nd iter
 
-Evaluating the performance of the selected CART model, with a decision threshold at **`r formatC(rf2_selected_prob_threshold, format='f', digits=3)`**:
+Evaluating the performance of the selected CART model, with a decision threshold at **`r formatC(cart2_selected_prob_threshold, format='f', digits=3)`**:
 
 ```{r}
 cart2_test_pred_probs <- predict(
