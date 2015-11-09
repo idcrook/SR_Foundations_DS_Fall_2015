@@ -5,6 +5,8 @@ date: "November 8, 2015"
 output: html_document
 ---
 
+View output [ExtraCredit.html](https://dpcrook.github.io/SR_Foundations_DS_Fall_2015/capstone/GiveMeSomeCredit/ExtraCredit.html).
+
 
 # Extra credit : Kaggle competition entry
 
