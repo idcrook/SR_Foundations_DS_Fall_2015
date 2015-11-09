@@ -178,7 +178,7 @@ cs.test$ConsolidatedNumberOfDaysPastDue <- (cs.test$NumberOfTime30.59DaysPastDue
   (cs.test$NumberOfTime60.89DaysPastDueNotWorse * 60) +
   (cs.test$NumberOfTimes90DaysLate * 90)
 
-summary(cs.test)
+# summary(cs.test)
 ```
 
 # run imputation
