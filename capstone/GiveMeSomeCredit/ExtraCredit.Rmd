@@ -85,7 +85,7 @@ x_vars_features = c(
 ```{r CART model extra credit, message=FALSE, warning=FALSE}
 
 # cp values
-cp.gridxc = expand.grid( .cp = seq(0.001, 0.02, 0.0002))
+cp.gridxc = expand.grid( .cp = seq(0.0001, 0.003, 0.0001))
 
 # Use the whole training data set and the constructed features
 cart_modelxc = train(
@@ -201,8 +201,8 @@ simplifiedxc = cs.test[c("age",
   )]
 
 ### This takes a long time so save the results
-imputedxc = complete(mice(simplifiedxc))
-save(imputedxc,file="imputed_testxc.Rda")
+#imputedxc = complete(mice(simplifiedxc))
+#save(imputedxc,file="imputed_testxc.Rda")
 load("imputed_testxc.Rda")  # load value in R object 'imputedxc'
 
 # save results
@@ -210,6 +210,7 @@ cs.test$MonthlyIncome <- imputedxc$MonthlyIncome
 cs.test$NumberOfDependents <- imputedxc$NumberOfDependents
 ```
 
+# generate predictions
 
 ``` {r}
 cartxc_test_pred_probs <- predict(
