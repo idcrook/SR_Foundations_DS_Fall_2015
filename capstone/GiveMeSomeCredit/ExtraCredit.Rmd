@@ -81,14 +81,14 @@ x_vars_features = c(
 cp.gridxc = expand.grid( .cp = seq(0.001, 0.02, 0.0002))
 
 cart_modelxc = train(
-  x=cs_train[, x_vars],
+  x=cs_train[, x_vars_features],
   y=cs_train$SeriousDlqin2yrs,
   method='rpart',     # CART
   metric=caret_optimized_metric,
   trControl=caret_train_control,
   tuneGrid = cp.gridxc
   )
-cart_modelxc
+# cart_modelxc
 
 # show the tree for the tuned .cp value 
 cart_modelxc.best.tree = cart_modelxc$finalModel
