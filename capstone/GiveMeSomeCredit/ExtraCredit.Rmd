@@ -12,6 +12,10 @@ output: html_document
 ```{r Setup, message=FALSE, warning=FALSE, echo=FALSE}
 setwd("~/projects/Classes/FoundationsOfDataScience_sliderule/github/capstone/GiveMeSomeCredit")
 
+# need these for decision tree graph
+library(rpart)
+library(rpart.plot)
+
 library(caret)
 library(data.table)
 
@@ -80,9 +84,10 @@ x_vars_features = c(
 # cp values
 cp.gridxc = expand.grid( .cp = seq(0.001, 0.02, 0.0002))
 
+# Use the whole training data set and the constructed features
 cart_modelxc = train(
-  x=cs_train[, x_vars_features],
-  y=cs_train$SeriousDlqin2yrs,
+  x=cs[, x_vars_features],
+  y=cs$SeriousDlqin2yrs,
   method='rpart',     # CART
   metric=caret_optimized_metric,
   trControl=caret_train_control,
