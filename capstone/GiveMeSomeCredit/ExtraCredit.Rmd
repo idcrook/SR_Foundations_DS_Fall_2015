@@ -119,7 +119,7 @@ rf_modelxc <- train(
   method='rf',        # Random Forest
   metric=caret_optimized_metric,
   ntree=B,            # number of trees in the Random Forest
-  nodesize=300,       # minimum node size set small enough to allow for complex trees,
+  nodesize=100,       # minimum node size set small enough to allow for complex trees,
                       # but not so small as to require too large B to eliminate high variance
   importance=TRUE,    # evaluate importance of predictors
   keep.inbag=TRUE,
