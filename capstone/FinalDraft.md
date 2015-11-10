@@ -128,6 +128,8 @@ The resulting cleaned data was saved to a file `cs-training-cleaned.csv`, to be 
 
 ## Feature Engineering
 
+### Feature construction
+
 After analysis and exploration of the provided training dataset, a few features were constructed as discussed in an above section.  A summary of constructed features is included here:
 
 Feature                              | Description
@@ -137,6 +139,40 @@ Feature                              | Description
 **ConsolidatedNumberOfDaysPastDue**  | Calculated as "total" number of days past due in each observation, scaling `NumberOfTime30-59DaysPastDueNotWorse`, `NumberOfTime60-89DaysPastDueNotWorse`, `NumberOfTimes90DaysLate` by `30`, `60`, and `90` respectively, and summing the values.
 
 During the first iteration of model building, these constructed variables were not included in model training. In the second iteration they were, at some exclusion of variables they were created from.  Between the first and second iterations, the variables used to build the model was the only thing changed.  The results can be observed in the *Modeling* section below.
+
+### Feature importance
+
+
+In a classification problem, it is often useful to determine which features might be useful as the most important predictors. 
+
+Feature importance was gathered for each model's variables after each model was trained.
+
+#### First model iteration
+
+Here are comparisons with each model's variable importance:
+
+![First iteration model feature importance](GiveMeSomeCredit/varImp1a_resized.png "First iteration model feature importance")
+
+Here is what the `FSelector` library function `information.gain()` had calculated for feature importance when run on the cleaned data set on the original features:
+
+![FSelector information.gain() on cleaned data](GiveMeSomeCredit/original_varImpFSelector.png "FSelector importance")
+
+This `FSelector` feature analysis was performed *after the modeling stage* (the author was unfamiliar with it until after the modeling work had been completed) but it agrees pretty closely with what the first iteration classification tree found for its important variables.
+
+
+#### Second model iteration
+
+Here are comparisons with each model's variable importance from the second iteration of model building:
+
+![First iteration model feature importance](GiveMeSomeCredit/varImp2a_resized.png "First iteration model feature importance")
+
+Here is what the  `information.gain()` had calculated for feature importance on the same variables:
+
+![FSelector information.gain() on cleaned data](GiveMeSomeCredit/varImpFSelector.png "FSelector importance")
+
+Again there is strong correspondence with with what the classification tree reported for its important variables. 
+
+Something interesting to note is that both the Random Forest model and the CART model have a very strong predictor in `ConsolidatedNumberOfDaysPastDue` in the second iteration models, but the logistic regression model had include `RevolvingUtilizationOfUnsecuredLines` as its slightly more important variable.
 
 ## Feedback to data providers
 

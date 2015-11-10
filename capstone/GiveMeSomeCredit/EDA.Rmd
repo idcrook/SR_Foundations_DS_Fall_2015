@@ -12,13 +12,13 @@ View output [EDA.html](https://dpcrook.github.io/SR_Foundations_DS_Fall_2015/cap
 ```{r message=FALSE, warning=FALSE}
 setwd("~/projects/Classes/FoundationsOfDataScience_sliderule/github/capstone/GiveMeSomeCredit")
 
-
 suppressMessages(library(dplyr)) # summarise
 library(mice)
 library(caret)
-library(ggplot2)
-library(psych)
+# library(psych)  # includes describe()
 
+library(FSelector)
+library(ggplot2)
 ```
 
 ## Start exploring the data set
@@ -238,9 +238,9 @@ imputed[rownames(subset(cs, is.na(cs$age))),]$age
 # MonthlyIncome and NumberOfDependents imputed value summaries
 imputed.mi <- imputed[rownames(subset(cs, is.na(cs$MonthlyIncome))),]$MonthlyIncome
 imputed.nd <- imputed[rownames(subset(cs, is.na(cs$NumberOfDependents))),]$NumberOfDependents
-describe(imputed.mi)
+#describe(imputed.mi)
 boxplot(imputed.mi)
-describe(imputed.nd)
+#describe(imputed.nd)
 hist(imputed.nd)
 ```
 
@@ -290,3 +290,82 @@ cs$SeriousDlqin2yrs <- (seriousd.int)
 
 write.table(cs, "cs-training-cleaned.csv", quote=F, row.names=F, sep=",")
 ```
+
+# Feature selection
+
+Added use of `FSelector` package based on mentor feedback.
+
+Had to spend a few hours [getting FSelector package installed on my system](http://github.crookster.org/RStudio-and-rJava-on-OS-X-El-Capitan/).
+
+## `information.gain()` in `FSelector`
+
+``` {r}
+
+original_feature_weights <- information.gain(SeriousDlqin2yrs ~ 
+                                               NumberOfDependents +
+                                               NumberRealEstateLoansOrLines + 
+                                               MonthlyIncome + 
+                                               DebtRatio + 
+                                               NumberOfOpenCreditLinesAndLoans + 
+                                               age + 
+                                               NumberOfTime60.89DaysPastDueNotWorse + 
+                                               NumberOfTime30.59DaysPastDueNotWorse +
+                                               NumberOfTimes90DaysLate +    
+                                               RevolvingUtilizationOfUnsecuredLines, cs)
+
+# Scale and order features
+scale_factor = sum(original_feature_weights$attr_importance)
+scaled_feature_weights <- original_feature_weights * (100 / scale_factor)
+setorder(scaled_feature_weights, attr_importance)  
+feature_names <- row.names(scaled_feature_weights)
+
+# Took me an hour of screwing around to figure out how to have labels not get
+# truncated in the plot.  Turned out you must set the mar par param with par;
+# cannot be set in barplot()!! and you must set par after png()
+
+#par(mar = c(5, 4, 4, 2) + 0.1)
+png("original_varImpFSelector.png", width=8, height=6, units="in", res=100)
+par(mar = c(5, 20, 4, 2) + 0.1)
+barplot(scaled_feature_weights$attr_importance, 
+        names.arg = feature_names,
+        horiz = TRUE, las = 1,
+        xlab = "Scaled relative feature importance", 
+        main = "Original Feature Importance from information.gain()            ."
+        )
+dev.off()
+
+feature_weights <- information.gain(SeriousDlqin2yrs ~ 
+                                      NumberOfDependents +
+                                      NumberRealEstateLoansOrLines + 
+                                      MonthlyIncome + 
+                                      NumberOfOpenCreditLinesAndLoans + 
+                                      age + 
+                                      MonthlyExpenses + 
+                                      NetMonthlySurplus + 
+                                      ConsolidatedNumberOfDaysPastDue +
+                                      RevolvingUtilizationOfUnsecuredLines, cs)
+print(feature_weights)
+
+# Scale and order features
+scale_factor = sum(feature_weights$attr_importance)
+scaled_feature_weights <- feature_weights * (100 / scale_factor)
+setorder(scaled_feature_weights, attr_importance)  
+feature_names <- row.names(scaled_feature_weights)
+
+png("varImpFSelector.png", width=8, height=6, units="in", res=100)
+par(mar = c(5, 20, 4, 2) + 0.1)
+barplot(scaled_feature_weights$attr_importance, 
+        names.arg = feature_names,
+        horiz = TRUE, las = 1,
+        xlab = "Scaled relative feature importance", 
+        main = "2nd Iteration Feat. Import. from information.gain()"
+        )
+dev.off()
+
+# get a formula for the top features
+subset_features <- cutoff.k(feature_weights, 6)
+f <- as.simple.formula(subset_features, "SeriousDlqin2yrs")
+print(f)
+
+```
+

@@ -23,6 +23,8 @@ suppressMessages(library(dplyr)) # summarise
 library(caret)
 library(data.table)
 #install.packages("stepPlr")
+#install.packages("pROC")  # needed for varImp on logreg
+library(gridExtra)
 
 source('EvaluationMetrics.R')
 ```
@@ -142,6 +144,9 @@ cart_model = train(
 # show the tree for the tuned .cp value 
 cart_model.best.tree = cart_model$finalModel
 prp(cart_model.best.tree)
+
+cart_varImp <- varImp(cart_model)
+plot(cart_varImp, main = "Variable importance in CART, 1st Iter.")
 ```
 
 
@@ -163,6 +168,9 @@ rf_model <- train(
   keep.inbag=TRUE,
   trControl=caret_train_control,
   tuneGrid=NULL)
+
+rf_varImp <- varImp(rf_model)
+plot(rf_varImp, main = "Variable importance in RF, 1st Iter.")
 ```
 
 ### Logistic Regression
@@ -178,6 +186,9 @@ log_reg_model <- train(
   tuneGrid=expand.grid(
     lambda=0,   # weight penalty parameter
     cp='aic'))     # complexity parameter (AIC / BIC)
+
+log_reg_varImp <- varImp(log_reg_model)
+plot(log_reg_varImp, main = "Variable importance in LogReg, 1st Iter.")
 ```
 
 ## Model prediction comparison
@@ -236,6 +247,20 @@ legend('right', c('Random Forest', 'Logistic Regression', 'CART'),
 dev.copy(png,"ROC1a.png",width=6,height=4.5,units="in",res=200)
 dev.off()
 ```
+
+### Model variable importance plots
+
+``` {r}
+# impVars <- row.names(log_reg_varImp$importance)
+
+png("varImp1a.png", width=12, height=4, units="in", res=300)
+p1 <- plot(log_reg_varImp, main = "LogReg, 1st Iter.")
+p2 <- plot(cart_varImp, main = "CART, 1st Iter.")
+p3 <- plot(rf_varImp, main = "RF, 1st Iter.")
+grid.arrange(p1, p2, p3, nrow = 1)
+dev.off()
+```
+
 
 ### predictions
 
@@ -396,6 +421,9 @@ cart_model2 = train(
 # show the tree for the tuned .cp value 
 cart_model2.best.tree = cart_model2$finalModel
 prp(cart_model2.best.tree)
+
+cart2_varImp <- varImp(cart_model2)
+plot(cart2_varImp, main = "Variable importance in CART, 2nd Iter.")
 ```
 
 
@@ -417,6 +445,9 @@ rf_model2 <- train(
   keep.inbag=TRUE,
   trControl=caret_train_control,
   tuneGrid=NULL)
+
+rf2_varImp <- varImp(rf_model2)
+plot(rf2_varImp, main = "Variable importance in RF, 2nd Iter.")
 ```
 
 ### Logistic Regression 2nd iter
@@ -432,6 +463,23 @@ log_reg_model2 <- train(
   tuneGrid=expand.grid(
     lambda=0,   # weight penalty parameter
     cp='aic'))     # complexity parameter (AIC / BIC)
+
+log_reg2_varImp <- varImp(log_reg_model2)
+plot(log_reg2_varImp, main = "Variable importance in LogReg, 2nd Iter.")
+```
+
+
+### Model variable importance plots
+
+``` {r}
+# impVars <- row.names(log_reg2_varImp$importance)
+
+png("varImp2a.png", width=12, height=4, units="in", res=300)
+p1 <- plot(log_reg2_varImp, main = "LogReg, 2nd Iter.")
+p2 <- plot(cart2_varImp, main = "CART, 2nd Iter.")
+p3 <- plot(rf2_varImp, main = "RF, 2nd Iter.")
+grid.arrange(p1, p2, p3, nrow = 1)
+dev.off()
 ```
 
 ## Model prediction comparison
