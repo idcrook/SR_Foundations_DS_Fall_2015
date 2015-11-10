@@ -365,11 +365,11 @@ rf_model2 &lt;- train(
 <div id="predictions-performance-on-2nd-iter" class="section level2">
 <h2>Predictions performance on 2nd iter</h2>
 <p>Again, a sensistivity threshold of <strong><code>75</code>%</strong> is chosen.</p>
-<div id="logistic-regression-3" class="section level4">
-<h4>Logistic regression</h4>
+<div id="cart-1" class="section level4">
+<h4>CART</h4>
 <p>The selected decision threshold is <strong>0.088</strong>.</p>
 </div>
-<div id="logistic-regression-4" class="section level4">
+<div id="logistic-regression-3" class="section level4">
 <h4>Logistic regression</h4>
 <p>The selected decision threshold is <strong>0.053</strong>.</p>
 </div>
@@ -420,7 +420,7 @@ display_accu_sens_spec(rf2_test_performance)</code></pre>
 </div>
 <div id="cart-model-2nd-iter" class="section level3">
 <h3>CART model 2nd iter</h3>
-<p>Evaluating the performance of the selected CART model, with a decision threshold at <strong>0.007</strong>:</p>
+<p>Evaluating the performance of the selected CART model, with a decision threshold at <strong>0.088</strong>:</p>
 <pre class="r"><code>cart2_test_pred_probs &lt;- predict(
   cart_model2, newdata=cs_test[, x_vars_features], type='prob')
 
