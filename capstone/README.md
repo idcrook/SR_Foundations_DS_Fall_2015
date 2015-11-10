@@ -4,7 +4,7 @@
 Project based off of Kaggle competition [GiveMeSomeCredit](https://www.kaggle.com/c/GiveMeSomeCredit)
 
 - Paper : [FinalDraft.md](FinalDraft.md)
-- Presentation : [Presentation.pdf](GiveMeSomeCredit_presentation.pdf)
+- Presentation : [GiveMeSomeCredit_presentation.pdf](https://github.com/dpcrook/SR_Foundations_DS_Fall_2015/raw/master/capstone/GiveMeSomeCredit_presentation.pdf)
 - Code: [(directory)](https://github.com/dpcrook/SR_Foundations_DS_Fall_2015/tree/master/capstone/GiveMeSomeCredit)
   - [EDA.Rmd](GiveMeSomeCredit/EDA.Rmd) - output [.html](https://dpcrook.github.io/SR_Foundations_DS_Fall_2015/capstone/GiveMeSomeCredit/EDA.html) : Data exploration and cleanup
   - [Modeling.Rmd](GiveMeSomeCredit/Modeling.Rmd) - output [.html](https://dpcrook.github.io/SR_Foundations_DS_Fall_2015/capstone/GiveMeSomeCredit/Modeling.html) : Data modeling, feature selection, and prediction
