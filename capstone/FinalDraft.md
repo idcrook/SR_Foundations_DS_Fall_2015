@@ -5,7 +5,7 @@ Author: David Crook <david.crook@gmail.com>
 
 # Introduction
 
-A completed Kaggle project, "[Give Me Some Credit](https://www.kaggle.com/c/GiveMeSomeCredit)", was chosen for this capstone project. From its project description:
+A Kaggle project from 2011, "[Give Me Some Credit](https://www.kaggle.com/c/GiveMeSomeCredit)", was chosen for this capstone project. From its project description:
 
 > Improve on the state of the art in credit scoring by predicting the probability that somebody will experience financial distress in the next two years.
 
@@ -13,9 +13,9 @@ The competition was a well-defined **binary classification** problem: make a pre
 
 ## More Background
 
-Banks play a crucial role in market economies. They decide who can get finance and on what terms and can make or break investment decisions.<sup id="afootnote1">[1](#footnote1)</sup> Lenders would prefer to issue loans with understandable risk of not getting paid back.
+Banks play a crucial role in market economies. They decide who can get finance and on what terms and can make or break investment decisions.<sup id="afootnote1">[1](#footnote1)</sup> Lenders want to issue loans with understandable risks of not getting paid back.
 
-At the heart of the loan decision process is applying available borrower information to determine credit-worthiness:
+At the heart of the loan decision process is using available borrower information to determine credit-worthiness:
 
 > Credit scoring algorithms, which make a guess at the probability of default, are the method banks use to determine whether or not a loan should be granted. This competition requires participants to improve on the state of the art in credit scoring, by predicting the probability that somebody will experience financial distress in the next two years.<sup id="afootnote2">[2](#footnote2)</sup>
 
@@ -158,7 +158,7 @@ Models were built and used to evaluate among the **decision tree** (CART), **ran
 
 ## Data selection and model building
 
-Since the `cs-test.csv` dataset did not include values for the dependent variable `SeriousDlqin2yrs`, it was not usable for validating the models created from the training data. Instead, the training dataset was split up to use for purposes of model validation and testing.
+Since the `cs-test.csv` dataset did not include values for the dependent variable `SeriousDlqin2yrs`, it was not usable for evaluating and validating the models created from the training data. Instead, the training dataset was split up to use for purposes of model evaluation and validation.
 
 The **`createDataPartition`** function from the **`caret`** [R package](https://cran.r-project.org/web/packages/caret/index.html) (`caret`: "Classification and Regression Training") was use to split samples representationally (and randomly) so that each split sample would reflect the source sample on the proportion of the dependent variable being expressed.
 
@@ -180,7 +180,7 @@ The `caret` package is very versatile; it contains wrappers and consistent param
 
 For cross-validation, the setting used was repeated k-fold cross validation, where `k` was `5` and `repeats` was set to `2`.  This is done in an attempt to avoid over-fitting the model to the model training dataset.
 
-### First Iteration
+### First Iteration Evaluation
 
 For the first iteration of the modeling, no features were de-selected and all original variables from the dataset were used. Similarly, no constructed features were included in the modeling. The ROC (Receiver Operating Characteristic) curve comparing the three first-iteration models:
 
@@ -190,7 +190,7 @@ For the first iteration of the modeling, no features were de-selected and all or
 
 The Random Forest model performs best in the first iteration, but the Logit (logistic regression) model keeps up, finally stalling around a *sensitivity* of `0.6` or so.  The CART model does not really do all that well in the first iteration.
 
-### Second Iteration - feature selection
+### Second Iteration Evaluation - feature selection
 
 For the second iteration model builds, the non-linear `DebtRatio` variable was removed, while `MonthlyExpenses` and `NetMonthlySurplus` were added. Also, the three "PastDue" variables were replaced with `ConsolidatedNumberOfDaysPastDue` that is intended to represent their linear sum. This was an attempt to remove some of the non-linearities identified in the existing variables in the dataset.
 
@@ -206,16 +206,19 @@ The Random Forest model improving significantly, and the CART model showed the g
 
 For extra credit, it was decided that actual predictions could be submitted to kaggle website.  The competition will still grade user submissions according to the competition rules.  For details, including code, refer to: [ExtraCredit.Rmd](GiveMeSomeCredit/ExtraCredit.Rmd).
 
-A CART model and a Random Forest model were built. The models were trained using the independent variables that the second iteration used, and were trained using the entire training dataset. In the other models above, splits of the training data were reserved for model testing and model validation. 
 
-
-### Kaggle submission results
+A CART model and a Random Forest model were built.
 
 The Random Forest model parameters were changed to reflect a larger number of observations in the training set for the first Random Forest submission.  Even so, the RF model took multiple hours to build on the author's workstation. 
 
-Full details can be found in [ExtraCredit.html](https://dpcrook.github.io/SR_Foundations_DS_Fall_2015/capstone/GiveMeSomeCredit/ExtraCredit.html).
+The models were trained using the the independent variables grouped that was used in the second iteration above. They were trained using the *entire training dataset*. In the other models above, splits of the training data were reserved for model testing and model validation.  A small change was made to the RF model to shorten build time (`nodesize` changed from `100` to `300`).
+Each was submitted on the kaggle site, and their results are included in [ExtraCredit.html](https://dpcrook.github.io/SR_Foundations_DS_Fall_2015/capstone/GiveMeSomeCredit/ExtraCredit.html).
 
-**FIXME: Include image** and AUC score
+### Kaggle submission results
+
+Since time permitted, `nodesize` was changed to `100` and model was rebuilt. The run took over `2.5` hours, but yielded a better performing model. It was scored an **AUC** of **`0.832493`** and a rank of 713 out of 925, better than one-fifth of the entries.
+
+![RF2 Ranking](GiveMeSomeCredit/RF-model2-placement.png "RF2 submission ranking")
 
 # Ideas for future research
 
