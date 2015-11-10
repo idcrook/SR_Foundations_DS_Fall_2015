@@ -125,6 +125,21 @@ The variables  `NumberOfTime30-59DaysPastDueNotWorse`, `NumberOfTime60-89DaysPas
 
 The resulting cleaned data was saved to a file `cs-training-cleaned.csv`, to be used as-is as input in [Modeling.Rmd](GiveMeSomeCredit/Modeling.Rmd).
 
+## Feedback to data providers
+
+Better input data can lead to better models and better results.
+
+- Try to be consistent on provided variables in a data source.  Numeric variables should be linear and defined consistently at least within the same variable where possible. For example, `DebtRatio` was sometimes a placeholder used to represent monthly expense values, and other times was defined as an actual ratio.  Also, ratios (or any term that arises from a division) can have division-by-zero issues, and should be avoided.
+
+- If any variables use encoded values, note that in the data dictionary and try to describe what these are.  Encoded values in an otherwise linear variable can be confusing and misleading to models.
+
+- Provide additional guidance and meaning of outliers in variables. 
+
+### *What other data could be good to have?* 
+
+Something that seemed missing in the datasets were borrower total assets and total liabilities.  It would have been interesting to see those variables in the dataset, especially since all loan applications the author is familiar required that data.
+
+
 
 ## Feature Engineering
 
@@ -173,20 +188,6 @@ Here is what the  `information.gain()` had calculated for feature importance on 
 Again there is strong correspondence with with what the classification tree reported for its important variables. 
 
 Something interesting to note is that both the Random Forest model and the CART model have a very strong predictor in `ConsolidatedNumberOfDaysPastDue` in the second iteration models, but the logistic regression model had include `RevolvingUtilizationOfUnsecuredLines` as its slightly more important variable.
-
-## Feedback to data providers
-
-Better input data can lead to better models and better results.
-
-- Try to be consistent on provided variables in a data source.  Numeric variables should be linear and defined consistently at least within the same variable where possible. For example, `DebtRatio` was sometimes a placeholder used to represent monthly expense values, and other times was defined as an actual ratio.  Also, ratios (or any term that arises from a division) can have division-by-zero issues, and should be avoided.
-
-- If any variables use encoded values, note that in the data dictionary and try to describe what these are.  Encoded values in an otherwise linear variable can be confusing and misleading to models.
-
-- Provide additional guidance and meaning of outliers in variables. 
-
-### *What other data could be good to have?* 
-
-Something that seemed missing in the datasets were borrower total assets and total liabilities.  It would have been interesting to see those variables in the dataset, especially since all loan applications the author is familiar required that data.
 
 # Modeling 
 
