@@ -136,7 +136,7 @@ Feature                              | Description
 **NetMonthlySurplus**                | `MonthlyIncome` minus the constructed feature `MonthlyExpenses`
 **ConsolidatedNumberOfDaysPastDue**  | Calculated as "total" number of days past due in each observation, scaling `NumberOfTime30-59DaysPastDueNotWorse`, `NumberOfTime60-89DaysPastDueNotWorse`, `NumberOfTimes90DaysLate` by `30`, `60`, and `90` respectively, and summing the values.
 
-During the first iteration of model building, these constructed variables were not included in model training. In the second iteration they were, at some exclusion of variables they were created from.  Between the first and second iterations, this was the only thing changed.  The results can be observed in the *Modeling* section below.
+During the first iteration of model building, these constructed variables were not included in model training. In the second iteration they were, at some exclusion of variables they were created from.  Between the first and second iterations, the variables used to build the model was the only thing changed.  The results can be observed in the *Modeling* section below.
 
 ## Feedback to data providers
 
@@ -202,10 +202,13 @@ In the second iteration, all three models performed at least slightly better on 
 
 The Random Forest model improving significantly, and the CART model showed the greatest performance improvement. The Random Forest performed the best overall of the three models again.
 
+### Model Validation
+
+Each of the first and second iteration models were validated against a reserve 
+
 # Extra Credit - Submitted on Kaggle
 
 For extra credit, it was decided that actual predictions could be submitted to kaggle website.  The competition will still grade user submissions according to the competition rules.  For details, including code, refer to: [ExtraCredit.Rmd](GiveMeSomeCredit/ExtraCredit.Rmd).
-
 
 A CART model and a Random Forest model were built.
 
