@@ -17,8 +17,9 @@ library(mice)
 library(caret)
 # library(psych)  # includes describe()
 
+library(data.table)
 library(FSelector)
-library(ggplot2)
+# library(ggplot2)
 ```
 
 ## Start exploring the data set
@@ -369,3 +370,6 @@ print(f)
 
 ```
 
+![FSelector information.gain() on original features](original_varImpFSelector.png "FSelector importance")
+
+![FSelector information.gain() on second iteration features](varImpFSelector.png "FSelector importance")
