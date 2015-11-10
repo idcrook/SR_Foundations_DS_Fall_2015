@@ -276,3 +276,11 @@ Its AUC was scored at **`0.702828`**. It would have ranked at `820`.
 Its AUC was scored at **`0.794789`**. It would have ranked at `772`. This placement is only better than **`r formatC(100 * (1  - 772/925), format='f', digits=2)`** of competitor team entries, or about one-sixth of the entries.
 
 Getting an increase in AUC of **`r formatC(0.869558 - 0.794789, format='f', digits=6)`** would have been required to win the competition.
+
+#### Second RF submission
+
+I lowered the nodesize down back to `100` in the RF model (the first RF run had it at 300) and reran.  This run took over two and a half hours. Howver, it performed better, getting an AUC of `0.832493` and a rank of 713. This placement is only better than **`r formatC(100 * (1  - 713/925), format='f', digits=2)`** of competitor team entries, or about better than one-fifth of the entries.
+
+[second RF submission](https://www.kaggle.com/c/GiveMeSomeCredit/leaderboard?submissionId=2130212)
+
+![RF2 Ranking](RF-model2-placement.png "RF2 submission ranking")
