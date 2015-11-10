@@ -542,6 +542,10 @@ Again, a sensistivity threshold of **`75`%** is chosen.
 cart2_sensitivity_threshold <- .75
 cart2_i <- min(which(cart2_oos_performance$sensitivity < cart2_sensitivity_threshold)) - 1
 cart2_selected_prob_threshold <- prob_thresholds[cart2_i]
+
+# confusion matrix
+pred      <- factor( ifelse(cart2_pred_probs[, "delinquent"] > cart2_selected_prob_threshold, "delinquent", "ok"))
+confusionMatrix(pred, cs_valid$SeriousDlqin2yrs)
 ```
 
 The selected decision threshold is **`r formatC(cart2_selected_prob_threshold, format='f', digits=3)`**.
