@@ -268,6 +268,7 @@ dev.off()
 
 A sensistivity threshold of **`75`%** was chosen, subjectively, meaning it is desired of the model parameters to catch **75%** of the *actual* delinquency cases.
 
+
 #### Logistic regression
 
 ```{r}
@@ -287,6 +288,17 @@ rf_selected_prob_threshold <- prob_thresholds[rf_i]
 ```
 
 The selected decision threshold for the Random Forest model is **`r formatC(rf_selected_prob_threshold, format='f', digits=3)`**.
+
+#### CART
+
+```{r}
+cart_sensitivity_threshold <- .30
+cart_i <- min(which(cart_oos_performance$sensitivity < cart_sensitivity_threshold)) - 1
+cart_selected_prob_threshold <- prob_thresholds[cart_i]
+# cart_selected_prob_threshold
+```
+
+The selected decision threshold is **`r formatC(cart_selected_prob_threshold, format='f', digits=3)`** &ndash; meaning when the CART model is used to predict on new data, it will predict "Delinquent" when the predicted probability exceeds that threshold.
 
 
 ## Testing Performance of Model
@@ -331,6 +343,28 @@ showCM <- function (preds, thresh, s) {
 
 
 ```
+
+### CART model 
+
+Evaluating the performance of the selected logit model, with a decision threshold at **`r formatC(cart_selected_prob_threshold, format='f', digits=3)`**:
+
+```{r}
+cart_test_pred_probs <- predict(
+  cart_model, newdata=cs_test[, x_vars], type='prob')
+
+cart_test_performance <- bin_classif_eval(
+  cart_test_pred_probs$delinquent, cs_test$SeriousDlqin2yrs, thresholds=cart_selected_prob_threshold)
+
+# expected predictive performance 
+display_accu_sens_spec(cart_oos_performance[cart_i, ])
+
+# tested performance 
+display_accu_sens_spec(cart_test_performance)
+
+showCM(cart_test_pred_probs, cart_selected_prob_threshold, "cart")
+```
+
+The *accuracy* is not great, but the test split data performance is similar to its expected performance.
 
 ### Logit (Logistic regression) model 
 
@@ -574,15 +608,6 @@ The CART model does significantly better this time using the engineered features
 
 Again, a sensistivity threshold of **`75`%** is chosen.
 
-#### CART
-
-```{r echo=FALSE}
-cart2_sensitivity_threshold <- .75
-cart2_i <- min(which(cart2_oos_performance$sensitivity < cart2_sensitivity_threshold)) - 1
-cart2_selected_prob_threshold <- prob_thresholds[cart2_i]
-```
-
-The selected decision threshold is **`r formatC(cart2_selected_prob_threshold, format='f', digits=3)`**.
 
 
 #### Logistic regression
@@ -601,10 +626,21 @@ The selected decision threshold is **`r formatC(log_reg2_selected_prob_threshold
 rf2_sensitivity_threshold <- .75
 rf2_i <- min(which(rf2_oos_performance$sensitivity < rf_sensitivity_threshold)) - 1
 rf2_selected_prob_threshold <- prob_thresholds[rf2_i]
-
 ```
 
 The selected decision threshold for the Random Forest model is **`r formatC(rf2_selected_prob_threshold, format='f', digits=3)`**.
+
+#### CART
+
+```{r echo=FALSE}
+cart2_sensitivity_threshold <- .75
+cart2_i <- min(which(cart2_oos_performance$sensitivity < cart2_sensitivity_threshold)) - 1
+cart2_selected_prob_threshold <- prob_thresholds[cart2_i]
+#cart2_selected_prob_threshold 
+```
+
+The selected decision threshold is **`r formatC(cart2_selected_prob_threshold, format='f', digits=3)`**.
+
 
 ## Evaluating 2nd iteration model performance
 
