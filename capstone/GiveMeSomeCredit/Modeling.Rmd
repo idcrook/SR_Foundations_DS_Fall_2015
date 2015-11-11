@@ -399,7 +399,7 @@ showCM(rf_test_pred_probs, rf_selected_prob_threshold, "rf")
 ```
 
 
-### Cumulative gains charts
+### Cumulative gains, lift charts and AUC
 
 ``` {r}
 
@@ -413,12 +413,26 @@ rf_gain <- performance(rf_rocr, "tpr", "rpp")
 p2 <- plot(rf_gain, colorize=TRUE, main = "Gain chart for RF 1st Iter") + abline(a=0,b=1,lty=2,col=8)
 dev.off()
 
+png("rf_lift.png", width=6, height=4.5, units="in", res=100)
+rf_lift <- performance(rf_rocr, "lift", "rpp")
+plot(rf_lift, main="Lift curve for RF 1st Iter", colorize=T)
+dev.off()
+
 png("logreg_gain.png", width=6, height=4.5, units="in", res=100)
 log_reg_rocr <- prediction(log_reg_test_pred_probs[,2], cs_test_y_numeric)
 log_reg_gain <- performance(log_reg_rocr, "tpr", "rpp")
 p3 <- plot(log_reg_gain, colorize=TRUE, main = "Gain chart for LogReg 1st Iter") + abline(a=0,b=1,lty=2,col=8)
 dev.off()
 
+png("logreg_lift.png", width=6, height=4.5, units="in", res=100)
+log_reg_lift <- performance(log_reg_rocr, "lift", "rpp")
+plot(rf_lift, main="Lift curve for LogReg 1st Iter", colorize=T)
+dev.off()
+
+rf_auc <- performance(rf_rocr, "auc")@y.values
+rf_auc
+log_reg_auc <- performance(log_reg_rocr, "auc")@y.values
+log_reg_auc
 ```
 
 The Random Forest model has a higher *accuracy* at the chosen sensitivity threshold. The performance comparison on the test slice is in the expected performance ballpark, within 1% or so.
@@ -681,10 +695,9 @@ showCM(cart2_test_pred_probs, cart2_selected_prob_threshold, "cart2")
 
 The CART model is in the running this time. The prediction performance comparison on the test slice is reasonable.
 
-### Cumulative gains charts
+### Cumulative gains and lift charts, AUC
 
 ``` {r}
-
 
 # prediction() needs this to be numeric (not factor SeriousDlqin2yrs)
 cs_test_y_numeric <- as.integer(cs_test$SeriousDlqin2yrs)
@@ -696,10 +709,20 @@ cart2_gain <- performance(cart2_rocr, "tpr", "rpp")
 p1 <- plot(cart2_gain, colorize=TRUE, main = "Gain chart for CART 2nd Iter") + abline(a=0,b=1,lty=2,col=8)
 dev.off()
 
+png("cart2_lift.png", width=6, height=4.5, units="in", res=100)
+cart2_lift <- performance(cart2_rocr, "lift", "rpp")
+plot(cart2_lift, main="Lift curve for CART 2nd Iter", colorize=T)
+dev.off()
+
 png("rf2_gain.png", width=6, height=4.5, units="in", res=100)
 rf2_rocr <- prediction(rf2_test_pred_probs[,2], cs_test_y_numeric)
 rf2_gain <- performance(rf2_rocr, "tpr", "rpp")
 p2 <- plot(rf2_gain, colorize=TRUE, main = "Gain chart for RF 2nd Iter") + abline(a=0,b=1,lty=2,col=8)
+dev.off()
+
+png("rf2_lift.png", width=6, height=4.5, units="in", res=100)
+rf2_lift <- performance(rf2_rocr, "lift", "rpp")
+plot(rf2_lift, main="Lift curve for RF 2nd Iter", colorize=T)
 dev.off()
 
 png("logreg2_gain.png", width=6, height=4.5, units="in", res=100)
@@ -707,5 +730,17 @@ log_reg2_rocr <- prediction(log_reg2_test_pred_probs[,2], cs_test_y_numeric)
 log_reg2_gain <- performance(log_reg2_rocr, "tpr", "rpp")
 p3 <- plot(log_reg2_gain, colorize=TRUE, main = "Gain chart for LogReg 2nd Iter") + abline(a=0,b=1,lty=2,col=8)
 dev.off()
+
+png("logreg2_lift.png", width=6, height=4.5, units="in", res=100)
+log_reg2_lift <- performance(log_reg2_rocr, "lift", "rpp")
+plot(log_reg2_lift, main="Lift curve for LogReg 2nd Iter", colorize=T)
+dev.off()
+
+cart2_auc <- performance(cart2_rocr, "auc")@y.values
+cart2_auc
+rf2_auc <- performance(rf2_rocr, "auc")@y.values
+rf2_auc
+log_reg2_auc <- performance(log_reg2_rocr, "auc")@y.values
+log_reg2_auc
 
 ```
