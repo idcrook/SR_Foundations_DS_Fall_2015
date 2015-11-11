@@ -12,3 +12,7 @@ convert +append rf_lift.png rf2_lift.png both_rf_lift.png
 convert +append logreg_gain.png logreg2_gain.png both_logreg_gain.png
 convert +append logreg_lift.png logreg2_lift.png both_logreg_lift.png
 
+# join the CART gain and lift charts side-by-side
+convert +append cart_gain.png cart2_gain.png both_cart_gain.png
+convert +append cart_lift.png cart2_lift.png both_cart_lift.png
+

@@ -246,7 +246,7 @@ The Random Forest model improving significantly, and the CART model showed the g
 
 ![Lift Curves RF](GiveMeSomeCredit/both_rf_lift.png "RF Lift Curves")
 
-![2nd Iter Lift Curve cart](GiveMeSomeCredit/cart2_lift.png "2nd Iter Lift Curve")
+![Lift Curves CART](GiveMeSomeCredit/both_cart_lift.png "2nd Iter Lift Curve")
 
 ##### Cumulative Gain charts
 
@@ -255,7 +255,7 @@ The Random Forest model improving significantly, and the CART model showed the g
 
 ![CGain Curves RF](GiveMeSomeCredit/both_rf_gain.png "RF CGain Curve")
 
-![2nd Iter CGain Curve cart](GiveMeSomeCredit/cart2_gain.png "2nd Iter CART CGain Curve")
+![CGain Curves CART](GiveMeSomeCredit/both_cart_gain.png "CART CGain Curve")
 
 # Extra Credit - Submitted on Kaggle
 

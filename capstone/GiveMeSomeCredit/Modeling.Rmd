@@ -450,6 +450,8 @@ log_reg_lift <- performance(log_reg_rocr, "lift", "rpp")
 plot(rf_lift, main="Lift curve for LogReg 1st Iter", colorize=T)
 dev.off()
 
+cart_auc <- performance(cart_rocr, "auc")@y.values
+cart_auc
 rf_auc <- performance(rf_rocr, "auc")@y.values
 rf_auc
 log_reg_auc <- performance(log_reg_rocr, "auc")@y.values
