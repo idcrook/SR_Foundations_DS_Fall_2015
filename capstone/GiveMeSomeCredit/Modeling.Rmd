@@ -398,6 +398,29 @@ display_accu_sens_spec(rf_test_performance)
 showCM(rf_test_pred_probs, rf_selected_prob_threshold, "rf")
 ```
 
+
+### Cumulative gains charts
+
+``` {r}
+
+# prediction() needs this to be numeric (not factor SeriousDlqin2yrs)
+cs_test_y_numeric <- as.integer(cs_test$SeriousDlqin2yrs)
+cs_test_y_numeric <- ifelse(cs_test_y_numeric == 2, 1, 0)
+
+png("rf_gain.png", width=6, height=4.5, units="in", res=100)
+rf_rocr <- prediction(rf_test_pred_probs[,2], cs_test_y_numeric)
+rf_gain <- performance(rf_rocr, "tpr", "rpp")
+p2 <- plot(rf_gain, colorize=TRUE, main = "Gain chart for RF 1st Iter") + abline(a=0,b=1,lty=2,col=8)
+dev.off()
+
+png("logreg_gain.png", width=6, height=4.5, units="in", res=100)
+log_reg_rocr <- prediction(log_reg_test_pred_probs[,2], cs_test_y_numeric)
+log_reg_gain <- performance(log_reg_rocr, "tpr", "rpp")
+p3 <- plot(log_reg_gain, colorize=TRUE, main = "Gain chart for LogReg 1st Iter") + abline(a=0,b=1,lty=2,col=8)
+dev.off()
+
+```
+
 The Random Forest model has a higher *accuracy* at the chosen sensitivity threshold. The performance comparison on the test slice is in the expected performance ballpark, within 1% or so.
 
 So the models seem to be able to predict reasonably for "new" data and are not overtrained.
@@ -662,23 +685,27 @@ The CART model is in the running this time. The prediction performance compariso
 
 ``` {r}
 
+
 # prediction() needs this to be numeric (not factor SeriousDlqin2yrs)
 cs_test_y_numeric <- as.integer(cs_test$SeriousDlqin2yrs)
 cs_test_y_numeric <- ifelse(cs_test_y_numeric == 2, 1, 0)
 
+png("cart2_gain.png", width=6, height=4.5, units="in", res=100)
 cart2_rocr <- prediction(cart2_test_pred_probs[,2], cs_test_y_numeric)
 cart2_gain <- performance(cart2_rocr, "tpr", "rpp")
-plot(cart2_gain, colorize=TRUE, main = "Cumulative Gain chart for CART 2nd Iter")
-abline(a=0,b=1,lty=2,col=8)
+p1 <- plot(cart2_gain, colorize=TRUE, main = "Gain chart for CART 2nd Iter") + abline(a=0,b=1,lty=2,col=8)
+dev.off()
 
+png("rf2_gain.png", width=6, height=4.5, units="in", res=100)
 rf2_rocr <- prediction(rf2_test_pred_probs[,2], cs_test_y_numeric)
 rf2_gain <- performance(rf2_rocr, "tpr", "rpp")
-plot(rf2_gain, colorize=TRUE, main = "Cumulative Gain chart for RF 2nd Iter")
-abline(a=0,b=1,lty=2,col=8)
+p2 <- plot(rf2_gain, colorize=TRUE, main = "Gain chart for RF 2nd Iter") + abline(a=0,b=1,lty=2,col=8)
+dev.off()
 
+png("logreg2_gain.png", width=6, height=4.5, units="in", res=100)
 log_reg2_rocr <- prediction(log_reg2_test_pred_probs[,2], cs_test_y_numeric)
 log_reg2_gain <- performance(log_reg2_rocr, "tpr", "rpp")
-plot(log_reg2_gain, colorize=TRUE, main = "Cumulative Gain chart for LogReg 2nd Iter")
-abline(a=0,b=1,lty=2,col=8)
+p3 <- plot(log_reg2_gain, colorize=TRUE, main = "Gain chart for LogReg 2nd Iter") + abline(a=0,b=1,lty=2,col=8)
+dev.off()
 
 ```
