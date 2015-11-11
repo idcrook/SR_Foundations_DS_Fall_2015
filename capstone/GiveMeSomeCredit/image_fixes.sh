@@ -4,6 +4,12 @@
 
 # needs to be re-run each time the original charts are updated
 
+
+# Resize the model variable importance plots
+convert -resize 40% varImp1a.png varImp1a_resized.png
+convert -resize 40% varImp2a.png varImp2a_resized.png
+
+
 # join the RF gain and lift  charts side-by-side
 convert +append rf_gain.png rf2_gain.png both_rf_gain.png
 convert +append rf_lift.png rf2_lift.png both_rf_lift.png
