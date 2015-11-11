@@ -161,7 +161,6 @@ Between the first and second iterations, the *variables used to build the model 
 
 ### Feature importance
 
-
 In a classification problem, it is often useful to determine which features might be useful as the most important predictors. 
 
 Feature importance was reported for each model's variables after each model was trained.
@@ -192,6 +191,24 @@ Here is what the  `information.gain()` had calculated for feature importance on 
 Again there is strong correspondence with with what the classification tree reported for its important variables. 
 
 Something interesting to note is that both the Random Forest model and the CART model have a very strong predictor in `ConsolidatedNumberOfDaysPastDue` in the second iteration models, but the logistic regression model had included `RevolvingUtilizationOfUnsecuredLines` as its slightly more important variable.
+
+### Per-feature bucketing exploration
+
+Based on feedback received, the author created some charts on a per-feature basis. The charts were to see if any trends a particular variable made on the dependent variable were visible. After wrestling with R for a while, it was completed.
+
+Each variable was split into equally sized buckets based on relative rank for that variable.  The percentage of `SeriousDlqin2yrs`, the dependent variable, was then calculated for that bucket.  Each variable was then charted, shown below.  The red line is the percentage in the whole dataset for `SeriousDlqin2yrs`. 
+
+![Feature bucket discrimination](GiveMeSomeCredit/feature_bucketed_discr_resized.png "Feature bucket discrimination")
+
+The charts show some striking trends in the variables.
+
+- The deliquency variables all have the same marked influence in their highest bucket range.
+- `RevolvingUtilizationOfUnsecuredLines` shows an accelerating trend in its higher values.
+- `MonthlyIncome` and `age` at lower bands are higher, and gradually lower linearly all across their buckets.
+
+
+
+
 
 # Modeling 
 

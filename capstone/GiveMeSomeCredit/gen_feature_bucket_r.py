@@ -16,14 +16,14 @@ decile <- cut(ar, quantile(ar, probs=0:10/10), include.lowest=TRUE, labels=FALSE
 deciles_%(IND_VAR)s <- split(cs, decile)
 pct_delinquent <- vector("numeric", length(deciles_%(IND_VAR)s))
 for (i in seq_along(deciles_%(IND_VAR)s)){
-  pct_delinquent[i] <- mean(deciles_%(IND_VAR)s[[i]]$SeriousDlqin2yrs)
+  pct_delinquent[i] <- 100 * mean(deciles_%(IND_VAR)s[[i]]$SeriousDlqin2yrs)
 }
 # results
 D%(NUM)d <- data.frame(pct_delinquent, bucket)
 # str(D%(NUM)d)
 p%(NUM)d <- ggplot(data = D%(NUM)d, aes(x = factor(bucket), y = pct_delinquent)) + 
   geom_bar(stat ="identity")  + 
-  geom_hline(aes (yintercept = sample_avg), alpha = 6/10, color = 'red', linetype = 2) +
+  geom_hline(aes (yintercept = 100 * sample_avg), alpha = 6/10, color = 'red', linetype = 1, lwd = 2) +
   ggtitle("%(IND_VAR)s buckets")
 p%(NUM)d
 """
@@ -61,7 +61,7 @@ for var in variables:
     i += 1
 
 print '# group charts into one'
-print 'png("feature_bucketed_discr.png", width=8, height=12, units="in", res=100)'
+print 'png("feature_bucketed_discr.png", width=12, height=16, units="in", res=100)'
 
 a = []
 for j in range(1, i):
