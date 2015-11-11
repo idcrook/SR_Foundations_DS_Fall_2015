@@ -1,12 +1,12 @@
 #!/bin/bash -x
 
-# script to run some imagemagick commands for 
+# script to run some imagemagick commands for chart combining
 
+# needs to be re-run each time the original charts are updated
 
 # join the RF gain and lift  charts side-by-side
 convert +append rf_gain.png rf2_gain.png both_rf_gain.png
 convert +append rf_lift.png rf2_lift.png both_rf_lift.png
-
 
 # join the logreg gain and lift charts side-by-side
 convert +append logreg_gain.png logreg2_gain.png both_logreg_gain.png
