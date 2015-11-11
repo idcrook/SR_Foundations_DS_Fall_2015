@@ -473,9 +473,9 @@ Using some constructed feature variables, the classifier models are rebuilt.
 x_vars_features = c(
   'RevolvingUtilizationOfUnsecuredLines',
   'age',
-  'NumberOfTime30.59DaysPastDueNotWorse',
-  'NumberOfTime60.89DaysPastDueNotWorse',
-  'NumberOfTimes90DaysLate',
+#   'NumberOfTime30.59DaysPastDueNotWorse',
+#   'NumberOfTime60.89DaysPastDueNotWorse',
+#   'NumberOfTimes90DaysLate',
   'MonthlyIncome',
   'MonthlyExpenses',
   'NetMonthlySurplus',
@@ -514,7 +514,7 @@ plot(cart2_varImp, main = "Variable importance in CART, 2nd Iter.")
 
 ### Random Forest 2nd iter
 
-```{r Random forest 2nd iter, message=FALSE, warning=FALSE}
+``` {r Random forest 2nd iter, message=FALSE, warning=FALSE}
 B <- 600
 
 # http://topepo.github.io/caret/Random_Forest.html
@@ -537,7 +537,7 @@ plot(rf2_varImp, main = "Variable importance in RF, 2nd Iter.")
 
 ### Logistic Regression 2nd iter
 
-```{r logit 2nd iter, message=FALSE, warning=FALSE}
+``` {r logit 2nd iter, message=FALSE, warning=FALSE}
 log_reg_model2 <- train(
   x=cs_train[, x_vars_features],
   y=cs_train$SeriousDlqin2yrs,
