@@ -137,7 +137,7 @@ Better input data can lead to better models and better results.
 
 ### *What other data could be good to have?* 
 
-Something that seemed missing in the datasets were borrower total assets and total liabilities.  It would have been interesting to see those variables in the dataset, especially since all loan applications the author is familiar required that data.
+Something that seemed missing in the datasets were borrower total assets and total liabilities.  It would have been interesting to see those variables in the dataset, especially since any loan application the author is familiar with required those data.
 
 
 
@@ -153,14 +153,18 @@ Feature                              | Description
 **NetMonthlySurplus**                | `MonthlyIncome` minus the constructed feature `MonthlyExpenses`
 **ConsolidatedNumberOfDaysPastDue**  | Calculated as "total" number of days past due in each observation, scaling `NumberOfTime30-59DaysPastDueNotWorse`, `NumberOfTime60-89DaysPastDueNotWorse`, `NumberOfTimes90DaysLate` by `30`, `60`, and `90` respectively, and summing the values.
 
-During the first iteration of model building, these constructed variables were not included in model training. In the second iteration they were, at some exclusion of variables they were created from.  Between the first and second iterations, the variables used to build the model was the only thing changed.  The results can be observed in the *Modeling* section below.
+### First and Second Iteration of the Model Differences
+
+During the first iteration of model building, these constructed variables were not included in model training. In the second iteration they were, at some exclusion of variables they were created from.
+
+Between the first and second iterations, the *variables used to build the model were the only thing changed*.  The results can be observed in the *Modeling* section below.
 
 ### Feature importance
 
 
 In a classification problem, it is often useful to determine which features might be useful as the most important predictors. 
 
-Feature importance was gathered for each model's variables after each model was trained.
+Feature importance was reported for each model's variables after each model was trained.
 
 #### First model iteration
 
@@ -172,12 +176,12 @@ Here is what the `FSelector` library function `information.gain()` had calculate
 
 ![FSelector information.gain() on cleaned data](GiveMeSomeCredit/original_varImpFSelector.png "FSelector importance")
 
-This `FSelector` feature analysis was performed *after the modeling stage* (the author was unfamiliar with it until after the modeling work had been completed) but it agrees pretty closely with what the first iteration classification tree found for its important variables.
+This `FSelector` feature analysis was performed *after the modeling stage* (the author was unfamiliar with it until after the modeling work had been completed) but it agrees pretty closely with what the first iteration *classification tree* found for its important variables.
 
 
 #### Second model iteration
 
-Here are comparisons with each model's variable importance from the second iteration of model building:
+Here are comparisons with each model's variable importance obtained during the second iteration of model builds:
 
 ![First iteration model feature importance](GiveMeSomeCredit/varImp2a_resized.png "First iteration model feature importance")
 
@@ -193,7 +197,7 @@ Something interesting to note is that both the Random Forest model and the CART 
 
 Models were built and used to evaluate among the **decision tree** (CART), **random forest**, and **logistic regression** binary classifiers.  These approaches were selected since they were the ones covered in the coursework.  Full R code with comments and many other details on the model builds and evaluation can be found in [Modeling.Rmd](GiveMeSomeCredit/Modeling.Rmd) (.html output: [Modeling.html](https://dpcrook.github.io/SR_Foundations_DS_Fall_2015/capstone/GiveMeSomeCredit/Modeling.html)). 
 
-## Data selection and model building
+### Data selection
 
 Since the `cs-test.csv` dataset did not include values for the dependent variable `SeriousDlqin2yrs`, it was not usable for evaluating and validating the models created from the training data. Instead, the training dataset was split up to use for purposes of model evaluation and validation.
 
@@ -219,7 +223,7 @@ For cross-validation, the setting used was repeated k-fold cross validation, whe
 
 ### First Iteration Evaluation
 
-For the first iteration of the modeling, no features were de-selected and all original variables from the dataset were used. Similarly, no constructed features were included in the modeling. The ROC (Receiver Operating Characteristic) curve comparing the three first-iteration models:
+For the first iteration of the modeling, no features were de-selected and all original independent variables from the dataset were used. Similarly, no constructed features were included in the modeling. The [ROC (Receiver Operating Characteristic) curve](https://en.wikipedia.org/wiki/Receiver_operating_characteristic) comparing the three first-iteration models:
 
 ![First Iteration ROC](GiveMeSomeCredit/ROC1a.png "First Iteration ROC curve")
 
@@ -235,13 +239,18 @@ When the models were rebuilt with the changed features, the resulting ROC curve 
 
 ![Second Iteration ROC](GiveMeSomeCredit/ROC2a.png "Second Iteration ROC curve")
 
-In the second iteration, all three models performed at least slightly better on the ROC curve.
+In the second iteration, all three models seemed to perform at least slightly better on the ROC curve.
 
 The Random Forest model improving significantly, and the CART model showed the greatest performance improvement. The Random Forest performed the best overall of the three models again.
 
+<!-- ![SBS ROC](GiveMeSomeCredit/both_ROC_resized.png "SBS ROC curve") -->
+
+
 ##### Lift charts
 
-![Lift Curves CART](GiveMeSomeCredit/both_cart_lift.png "2nd Iter Lift Curve") 
+![Lift Curves CART](GiveMeSomeCredit/both_cart_lift.png "CART Lift Curve")
+
+Noting the lift values on the right scale in the charts, the second generation lift curve was more efficient at predicting.
 
 ![Lift Curves logreg](GiveMeSomeCredit/both_logreg_lift.png "LogReg Lift Curves")
 
@@ -252,9 +261,11 @@ The Random Forest model improving significantly, and the CART model showed the g
 
 ![CGain Curves CART](GiveMeSomeCredit/both_cart_gain.png "CART CGain Curve") 
 
-There is a large increase in the CART gain chart with its better predicting model.
+There is a large improvement in the CART gain chart with its better predicting model.
 
 ![CGain Curves logreg](GiveMeSomeCredit/both_logreg_gain.png "LogReg CGain Curve")
+
+The logistic regressions perform similarly on each iteration.
 
 ![CGain Curves RF](GiveMeSomeCredit/both_rf_gain.png "RF CGain Curve")
 
@@ -262,6 +273,8 @@ There is a small perceptible increase in the Random Forest gain chart.
 
 
 ##### AUC
+
+`AUC` values were calculated on the models using a holdback portion of the data.  `AUC` is essentially the area underneath the ROC curve.
 
 Model           | AUC calculation
 ----------------|----------------
@@ -274,6 +287,10 @@ RF              | 0.8132474
 CART            | 0.7953715
 Logit           | 0.809895
 RF              | 0.8263005
+
+The Random Forest models scored the best `AUC` on each iteration.  There were indications that additional tuning of how the random forests are built could improve RF predictive performance further.
+
+The Logit (Logistic Regression) actually decreased in the second iteration. This might be the result of significant predictors being removed for the second iteration.
 
 # Extra Credit - Submitted on Kaggle
 

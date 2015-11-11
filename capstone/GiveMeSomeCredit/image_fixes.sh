@@ -22,3 +22,6 @@ convert +append logreg_lift.png logreg2_lift.png both_logreg_lift.png
 convert +append cart_gain.png cart2_gain.png both_cart_gain.png
 convert +append cart_lift.png cart2_lift.png both_cart_lift.png
 
+# combine and resize ROC plots
+#convert +append ROC1a.png ROC2a.png both_ROC.png
+#convert -resize 80% both_ROC.png  both_ROC_resized.png
