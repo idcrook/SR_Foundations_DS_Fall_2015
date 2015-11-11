@@ -241,21 +241,39 @@ The Random Forest model improving significantly, and the CART model showed the g
 
 ##### Lift charts
 
+![Lift Curves CART](GiveMeSomeCredit/both_cart_lift.png "2nd Iter Lift Curve") 
 
 ![Lift Curves logreg](GiveMeSomeCredit/both_logreg_lift.png "LogReg Lift Curves")
 
 ![Lift Curves RF](GiveMeSomeCredit/both_rf_lift.png "RF Lift Curves")
 
-![Lift Curves CART](GiveMeSomeCredit/both_cart_lift.png "2nd Iter Lift Curve")
 
 ##### Cumulative Gain charts
 
+![CGain Curves CART](GiveMeSomeCredit/both_cart_gain.png "CART CGain Curve") 
+
+There is a large increase in the CART gain chart with its better predicting model.
 
 ![CGain Curves logreg](GiveMeSomeCredit/both_logreg_gain.png "LogReg CGain Curve")
 
 ![CGain Curves RF](GiveMeSomeCredit/both_rf_gain.png "RF CGain Curve")
 
-![CGain Curves CART](GiveMeSomeCredit/both_cart_gain.png "CART CGain Curve")
+There is a small perceptible increase in the Random Forest gain chart.
+
+
+##### AUC
+
+Model           | AUC calculation
+----------------|----------------
+*1st Iteration* |
+CART            | 0.6503274
+Logit           | 0.8102036
+RF              | 0.8132474
+                |
+*2nd Iteration* |
+CART            | 0.7953715
+Logit           | 0.809895
+RF              | 0.8263005
 
 # Extra Credit - Submitted on Kaggle
 
@@ -265,7 +283,7 @@ A CART model and a Random Forest model were built.
 
 The Random Forest model parameters were changed to reflect a larger number of observations in the training set for the first Random Forest submission.  Even so, the RF model took multiple hours to build on the author's workstation. 
 
-The models were trained using the the independent variables grouped that was used in the second iteration above. They were trained using the *entire training dataset*. In the other models above, splits of the training data were reserved for model testing and model validation.  A small change was made to the RF model to shorten build time (`nodesize` changed from `100` to `300`).
+The models were trained using the the independent variables grouped that was used in the second iteration above. They were trained using the *entire training dataset*. In the other models above, splits of the training data were reserved for model testing and model validation.  A small change was made to the RF model to shorten build time (`nodesize` changed from `100` to `300`), since it was running on the whole training dataset.
 Each was submitted on the kaggle site, and their results are included in [ExtraCredit.html](https://dpcrook.github.io/SR_Foundations_DS_Fall_2015/capstone/GiveMeSomeCredit/ExtraCredit.html).
 
 ### Kaggle submission results
@@ -283,6 +301,7 @@ Since time permitted, `nodesize` was changed to `100` and model was rebuilt. The
 - Run experiments on the best ways of filling in **NA** values for this dataset.  Compare methods of imputation and other traditional ways.
   - Perhaps impute the missing values in `MonthlyIncome` and `NumberOfDependents` using *both* the included training and test datasets as one combined sample. The test dataset also had **NA**s for these variables, and the author ended up *imputing* the values separately in order to make predictions on the test dataset for the extra credit portion.
 
+- Run additional experiments toward increasing the `AUC` metric (since that was the goal of the competition). Explore more ensemble methods.
 
 ### Boosting and Other Binary Classifiers
 

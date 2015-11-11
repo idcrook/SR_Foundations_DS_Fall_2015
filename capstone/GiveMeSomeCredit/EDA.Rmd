@@ -92,6 +92,8 @@ There are many outliers in this variable, with a median of **`r formatC(median(c
 boxplot(log(cs$MonthlyIncome + 1))
 summary(log(cs$MonthlyIncome + 1))
 
+# monthly income as predictor
+
 ```
 
 There are **`r formatC(sum(is.na(cs$MonthlyIncome)), format='f', digits=0, big.mark=',')` NA**s in `MonthlyIncome`.
@@ -343,6 +345,9 @@ feature_weights <- information.gain(SeriousDlqin2yrs ~
                                       age + 
                                       MonthlyExpenses + 
                                       NetMonthlySurplus + 
+#                                       NumberOfTime60.89DaysPastDueNotWorse + 
+#                                       NumberOfTime30.59DaysPastDueNotWorse +
+#                                       NumberOfTimes90DaysLate +    
                                       ConsolidatedNumberOfDaysPastDue +
                                       RevolvingUtilizationOfUnsecuredLines, cs)
 print(feature_weights)
