@@ -25,6 +25,7 @@ library(data.table)
 #install.packages("stepPlr")
 #install.packages("pROC")  # needed for varImp on logreg
 library(gridExtra)
+library(ROCR)
 
 source('EvaluationMetrics.R')
 ```
@@ -221,6 +222,7 @@ log_reg_pred_probs <- predict(
   log_reg_model, newdata=cs_valid[, x_vars], type='prob')
 log_reg_oos_performance <- bin_classif_eval(
   log_reg_pred_probs$delinquent, cs_valid$SeriousDlqin2yrs, thresholds=prob_thresholds)
+
 ```
 
 
@@ -656,3 +658,27 @@ showCM(cart2_test_pred_probs, cart2_selected_prob_threshold, "cart2")
 
 The CART model is in the running this time. The prediction performance comparison on the test slice is reasonable.
 
+### Cumulative gains charts
+
+``` {r}
+
+# prediction() needs this to be numeric (not factor SeriousDlqin2yrs)
+cs_test_y_numeric <- as.integer(cs_test$SeriousDlqin2yrs)
+cs_test_y_numeric <- ifelse(cs_test_y_numeric == 2, 1, 0)
+
+cart2_rocr <- prediction(cart2_test_pred_probs[,2], cs_test_y_numeric)
+cart2_gain <- performance(cart2_rocr, "tpr", "rpp")
+plot(cart2_gain, colorize=TRUE, main = "Cumulative Gain chart for CART 2nd Iter")
+abline(a=0,b=1,lty=2,col=8)
+
+rf2_rocr <- prediction(rf2_test_pred_probs[,2], cs_test_y_numeric)
+rf2_gain <- performance(rf2_rocr, "tpr", "rpp")
+plot(rf2_gain, colorize=TRUE, main = "Cumulative Gain chart for RF 2nd Iter")
+abline(a=0,b=1,lty=2,col=8)
+
+log_reg2_rocr <- prediction(log_reg2_test_pred_probs[,2], cs_test_y_numeric)
+log_reg2_gain <- performance(log_reg2_rocr, "tpr", "rpp")
+plot(log_reg2_gain, colorize=TRUE, main = "Cumulative Gain chart for LogReg 2nd Iter")
+abline(a=0,b=1,lty=2,col=8)
+
+```
