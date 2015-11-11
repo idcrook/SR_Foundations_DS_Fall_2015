@@ -417,6 +417,17 @@ showCM(rf_test_pred_probs, rf_selected_prob_threshold, "rf")
 cs_test_y_numeric <- as.integer(cs_test$SeriousDlqin2yrs)
 cs_test_y_numeric <- ifelse(cs_test_y_numeric == 2, 1, 0)
 
+png("cart_gain.png", width=6, height=4.5, units="in", res=100)
+cart_rocr <- prediction(cart_test_pred_probs[,2], cs_test_y_numeric)
+cart_gain <- performance(cart_rocr, "tpr", "rpp")
+p1 <- plot(cart_gain, colorize=TRUE, main = "Gain chart for CART 1st Iter") + abline(a=0,b=1,lty=2,col=8)
+dev.off()
+
+png("cart_lift.png", width=6, height=4.5, units="in", res=100)
+cart_lift <- performance(cart_rocr, "lift", "rpp")
+plot(cart_lift, main="Lift curve for CART 1st Iter", colorize=T)
+dev.off()
+
 png("rf_gain.png", width=6, height=4.5, units="in", res=100)
 rf_rocr <- prediction(rf_test_pred_probs[,2], cs_test_y_numeric)
 rf_gain <- performance(rf_rocr, "tpr", "rpp")
