@@ -264,30 +264,6 @@ dev.off()
 ```
 
 
-### predictions
-
-Let us choose, subjectively, a sensistivity threshold of **`75`%**, meaning we'd like to catch **75%** of the delinquency cases with our model.
-
-#### Logistic regression
-
-```{r}
-log_reg_sensitivity_threshold <- .75
-log_reg_i <- min(which(log_reg_oos_performance$sensitivity < log_reg_sensitivity_threshold)) - 1
-log_reg_selected_prob_threshold <- prob_thresholds[log_reg_i]
-```
-
-The selected decision threshold is **`r formatC(log_reg_selected_prob_threshold, format='f', digits=3)`** &ndash; meaning when the logistic regression model is used to predict on new data, it will predict "Delinquent" when the predicted probability exceeds that threshold.
-
-#### Random forest
-
-```{r}
-rf_sensitivity_threshold <- .75
-rf_i <- min(which(rf_oos_performance$sensitivity < rf_sensitivity_threshold)) - 1
-rf_selected_prob_threshold <- prob_thresholds[rf_i]
-```
-
-The selected decision threshold for the Random Forest model is **`r formatC(rf_selected_prob_threshold, format='f', digits=3)`**.
-
 ## predictions
 
 A sensistivity threshold of **`75`%** was chosen, subjectively, meaning it is desired of the model parameters to catch **75%** of the *actual* delinquency cases.
@@ -450,6 +426,9 @@ Using some constructed feature variables, the classifier models are rebuilt.
 x_vars_features = c(
   'RevolvingUtilizationOfUnsecuredLines',
   'age',
+  'NumberOfTime30.59DaysPastDueNotWorse',
+  'NumberOfTime60.89DaysPastDueNotWorse',
+  'NumberOfTimes90DaysLate',
   'MonthlyIncome',
   'MonthlyExpenses',
   'NetMonthlySurplus',
@@ -475,7 +454,7 @@ cart_model2 = train(
   trControl=caret_train_control,
   tuneGrid = cp.grid
   )
-# cart_model2
+cart_model2
 
 # show the tree for the tuned .cp value 
 cart_model2.best.tree = cart_model2$finalModel
