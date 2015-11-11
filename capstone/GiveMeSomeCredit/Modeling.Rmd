@@ -491,7 +491,10 @@ x_vars_features = c(
 ```{r CART model 2nd iter, message=FALSE, warning=FALSE}
 
 # cp values
-cp.grid = expand.grid( .cp = seq(0.001, 0.010, 0.001))
+### cp.grid = expand.grid( .cp = seq(0.001, 0.010, 0.001))
+# changed to a fixed value since randomness was changing this to a worse
+# predicting model
+cp.grid = expand.grid( .cp = c(0.003))
 
 cart_model2 = train(
   x=cs_train[, x_vars_features],
@@ -502,6 +505,7 @@ cart_model2 = train(
   tuneGrid = cp.grid
   )
 cart_model2
+#str(cart_model2)
 
 # show the tree for the tuned .cp value 
 cart_model2.best.tree = cart_model2$finalModel
