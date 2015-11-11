@@ -11,7 +11,9 @@ template = """
 # split into ten groups based on age
 num_buckets <- %(NUM_BUCKETS)s
 bucket <- seq(1, num_buckets)
-deciles_%(IND_VAR)s <- split(cs, cut_number(cs$%(IND_VAR)s, num_buckets))
+ar <- rank(cs$%(IND_VAR)s, ties.method = "first")
+decile <- cut(ar, quantile(ar, probs=0:10/10), include.lowest=TRUE, labels=FALSE)
+deciles_%(IND_VAR)s <- split(cs, decile)
 pct_delinquent <- vector("numeric", length(deciles_%(IND_VAR)s))
 for (i in seq_along(deciles_%(IND_VAR)s)){
   pct_delinquent[i] <- mean(deciles_%(IND_VAR)s[[i]]$SeriousDlqin2yrs)
@@ -42,7 +44,7 @@ variables = [
     'NetMonthlySurplus', 
     'NumberRealEstateLoansOrLines', 
     'NumberOfOpenCreditLinesAndLoans', 
-    'RevolvingUtilizationOfUnsecuredLines'
+    'RevolvingUtilizationOfUnsecuredLines',
     'NumberOfTime60.89DaysPastDueNotWorse', 
     'NumberOfTime30.59DaysPastDueNotWorse', 
     'NumberOfTimes90DaysLate', 

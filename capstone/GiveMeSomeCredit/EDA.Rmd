@@ -19,7 +19,10 @@ library(caret)
 
 library(data.table)
 library(FSelector)
-# library(ggplot2)
+library(ggplot2)
+
+library(gridExtra)
+
 ```
 
 ## Start exploring the data set
@@ -92,7 +95,6 @@ There are many outliers in this variable, with a median of **`r formatC(median(c
 boxplot(log(cs$MonthlyIncome + 1))
 summary(log(cs$MonthlyIncome + 1))
 
-# monthly income as predictor
 
 ```
 
@@ -378,3 +380,341 @@ print(f)
 ![FSelector information.gain() on original features](original_varImpFSelector.png "FSelector importance")
 
 ![FSelector information.gain() on second iteration features](varImpFSelector.png "FSelector importance")
+
+### Some feature EDA
+
+``` {r }
+sample_avg = mean(cs$SeriousDlqin2yrs)
+
+########################################
+#  age
+########################################
+
+# generated with gen_feature_bucket_r.py
+
+# split into ten groups based on age
+num_buckets <- 10
+bucket <- seq(1, num_buckets)
+ar <- rank(cs$age, ties.method = "first")
+decile <- cut(ar, quantile(ar, probs=0:10/10), include.lowest=TRUE, labels=FALSE)
+deciles_age <- split(cs, decile)
+pct_delinquent <- vector("numeric", length(deciles_age))
+for (i in seq_along(deciles_age)){
+  pct_delinquent[i] <- mean(deciles_age[[i]]$SeriousDlqin2yrs)
+}
+# results
+D1 <- data.frame(pct_delinquent, bucket)
+# str(D1)
+p1 <- ggplot(data = D1, aes(x = factor(bucket), y = pct_delinquent)) + 
+  geom_bar(stat ="identity")  + 
+  geom_hline(aes (yintercept = sample_avg), alpha = 6/10, color = 'red', linetype = 2) +
+  ggtitle("age buckets")
+p1
+
+########################################
+#  NumberOfDependents
+########################################
+
+# generated with gen_feature_bucket_r.py
+
+# split into ten groups based on age
+num_buckets <- 10
+bucket <- seq(1, num_buckets)
+ar <- rank(cs$NumberOfDependents, ties.method = "first")
+decile <- cut(ar, quantile(ar, probs=0:10/10), include.lowest=TRUE, labels=FALSE)
+deciles_NumberOfDependents <- split(cs, decile)
+pct_delinquent <- vector("numeric", length(deciles_NumberOfDependents))
+for (i in seq_along(deciles_NumberOfDependents)){
+  pct_delinquent[i] <- mean(deciles_NumberOfDependents[[i]]$SeriousDlqin2yrs)
+}
+# results
+D2 <- data.frame(pct_delinquent, bucket)
+# str(D2)
+p2 <- ggplot(data = D2, aes(x = factor(bucket), y = pct_delinquent)) + 
+  geom_bar(stat ="identity")  + 
+  geom_hline(aes (yintercept = sample_avg), alpha = 6/10, color = 'red', linetype = 2) +
+  ggtitle("NumberOfDependents buckets")
+p2
+
+########################################
+#  DebtRatio
+########################################
+
+# generated with gen_feature_bucket_r.py
+
+# split into ten groups based on age
+num_buckets <- 10
+bucket <- seq(1, num_buckets)
+ar <- rank(cs$DebtRatio, ties.method = "first")
+decile <- cut(ar, quantile(ar, probs=0:10/10), include.lowest=TRUE, labels=FALSE)
+deciles_DebtRatio <- split(cs, decile)
+pct_delinquent <- vector("numeric", length(deciles_DebtRatio))
+for (i in seq_along(deciles_DebtRatio)){
+  pct_delinquent[i] <- mean(deciles_DebtRatio[[i]]$SeriousDlqin2yrs)
+}
+# results
+D3 <- data.frame(pct_delinquent, bucket)
+# str(D3)
+p3 <- ggplot(data = D3, aes(x = factor(bucket), y = pct_delinquent)) + 
+  geom_bar(stat ="identity")  + 
+  geom_hline(aes (yintercept = sample_avg), alpha = 6/10, color = 'red', linetype = 2) +
+  ggtitle("DebtRatio buckets")
+p3
+
+########################################
+#  MonthlyIncome
+########################################
+
+# generated with gen_feature_bucket_r.py
+
+# split into ten groups based on age
+num_buckets <- 10
+bucket <- seq(1, num_buckets)
+ar <- rank(cs$MonthlyIncome, ties.method = "first")
+decile <- cut(ar, quantile(ar, probs=0:10/10), include.lowest=TRUE, labels=FALSE)
+deciles_MonthlyIncome <- split(cs, decile)
+pct_delinquent <- vector("numeric", length(deciles_MonthlyIncome))
+for (i in seq_along(deciles_MonthlyIncome)){
+  pct_delinquent[i] <- mean(deciles_MonthlyIncome[[i]]$SeriousDlqin2yrs)
+}
+# results
+D4 <- data.frame(pct_delinquent, bucket)
+# str(D4)
+p4 <- ggplot(data = D4, aes(x = factor(bucket), y = pct_delinquent)) + 
+  geom_bar(stat ="identity")  + 
+  geom_hline(aes (yintercept = sample_avg), alpha = 6/10, color = 'red', linetype = 2) +
+  ggtitle("MonthlyIncome buckets")
+p4
+
+########################################
+#  MonthlyExpenses
+########################################
+
+# generated with gen_feature_bucket_r.py
+
+# split into ten groups based on age
+num_buckets <- 10
+bucket <- seq(1, num_buckets)
+ar <- rank(cs$MonthlyExpenses, ties.method = "first")
+decile <- cut(ar, quantile(ar, probs=0:10/10), include.lowest=TRUE, labels=FALSE)
+deciles_MonthlyExpenses <- split(cs, decile)
+pct_delinquent <- vector("numeric", length(deciles_MonthlyExpenses))
+for (i in seq_along(deciles_MonthlyExpenses)){
+  pct_delinquent[i] <- mean(deciles_MonthlyExpenses[[i]]$SeriousDlqin2yrs)
+}
+# results
+D5 <- data.frame(pct_delinquent, bucket)
+# str(D5)
+p5 <- ggplot(data = D5, aes(x = factor(bucket), y = pct_delinquent)) + 
+  geom_bar(stat ="identity")  + 
+  geom_hline(aes (yintercept = sample_avg), alpha = 6/10, color = 'red', linetype = 2) +
+  ggtitle("MonthlyExpenses buckets")
+p5
+
+########################################
+#  NetMonthlySurplus
+########################################
+
+# generated with gen_feature_bucket_r.py
+
+# split into ten groups based on age
+num_buckets <- 10
+bucket <- seq(1, num_buckets)
+ar <- rank(cs$NetMonthlySurplus, ties.method = "first")
+decile <- cut(ar, quantile(ar, probs=0:10/10), include.lowest=TRUE, labels=FALSE)
+deciles_NetMonthlySurplus <- split(cs, decile)
+pct_delinquent <- vector("numeric", length(deciles_NetMonthlySurplus))
+for (i in seq_along(deciles_NetMonthlySurplus)){
+  pct_delinquent[i] <- mean(deciles_NetMonthlySurplus[[i]]$SeriousDlqin2yrs)
+}
+# results
+D6 <- data.frame(pct_delinquent, bucket)
+# str(D6)
+p6 <- ggplot(data = D6, aes(x = factor(bucket), y = pct_delinquent)) + 
+  geom_bar(stat ="identity")  + 
+  geom_hline(aes (yintercept = sample_avg), alpha = 6/10, color = 'red', linetype = 2) +
+  ggtitle("NetMonthlySurplus buckets")
+p6
+
+########################################
+#  NumberRealEstateLoansOrLines
+########################################
+
+# generated with gen_feature_bucket_r.py
+
+# split into ten groups based on age
+num_buckets <- 10
+bucket <- seq(1, num_buckets)
+ar <- rank(cs$NumberRealEstateLoansOrLines, ties.method = "first")
+decile <- cut(ar, quantile(ar, probs=0:10/10), include.lowest=TRUE, labels=FALSE)
+deciles_NumberRealEstateLoansOrLines <- split(cs, decile)
+pct_delinquent <- vector("numeric", length(deciles_NumberRealEstateLoansOrLines))
+for (i in seq_along(deciles_NumberRealEstateLoansOrLines)){
+  pct_delinquent[i] <- mean(deciles_NumberRealEstateLoansOrLines[[i]]$SeriousDlqin2yrs)
+}
+# results
+D7 <- data.frame(pct_delinquent, bucket)
+# str(D7)
+p7 <- ggplot(data = D7, aes(x = factor(bucket), y = pct_delinquent)) + 
+  geom_bar(stat ="identity")  + 
+  geom_hline(aes (yintercept = sample_avg), alpha = 6/10, color = 'red', linetype = 2) +
+  ggtitle("NumberRealEstateLoansOrLines buckets")
+p7
+
+########################################
+#  NumberOfOpenCreditLinesAndLoans
+########################################
+
+# generated with gen_feature_bucket_r.py
+
+# split into ten groups based on age
+num_buckets <- 10
+bucket <- seq(1, num_buckets)
+ar <- rank(cs$NumberOfOpenCreditLinesAndLoans, ties.method = "first")
+decile <- cut(ar, quantile(ar, probs=0:10/10), include.lowest=TRUE, labels=FALSE)
+deciles_NumberOfOpenCreditLinesAndLoans <- split(cs, decile)
+pct_delinquent <- vector("numeric", length(deciles_NumberOfOpenCreditLinesAndLoans))
+for (i in seq_along(deciles_NumberOfOpenCreditLinesAndLoans)){
+  pct_delinquent[i] <- mean(deciles_NumberOfOpenCreditLinesAndLoans[[i]]$SeriousDlqin2yrs)
+}
+# results
+D8 <- data.frame(pct_delinquent, bucket)
+# str(D8)
+p8 <- ggplot(data = D8, aes(x = factor(bucket), y = pct_delinquent)) + 
+  geom_bar(stat ="identity")  + 
+  geom_hline(aes (yintercept = sample_avg), alpha = 6/10, color = 'red', linetype = 2) +
+  ggtitle("NumberOfOpenCreditLinesAndLoans buckets")
+p8
+
+########################################
+#  RevolvingUtilizationOfUnsecuredLines
+########################################
+
+# generated with gen_feature_bucket_r.py
+
+# split into ten groups based on age
+num_buckets <- 10
+bucket <- seq(1, num_buckets)
+ar <- rank(cs$RevolvingUtilizationOfUnsecuredLines, ties.method = "first")
+decile <- cut(ar, quantile(ar, probs=0:10/10), include.lowest=TRUE, labels=FALSE)
+deciles_RevolvingUtilizationOfUnsecuredLines <- split(cs, decile)
+pct_delinquent <- vector("numeric", length(deciles_RevolvingUtilizationOfUnsecuredLines))
+for (i in seq_along(deciles_RevolvingUtilizationOfUnsecuredLines)){
+  pct_delinquent[i] <- mean(deciles_RevolvingUtilizationOfUnsecuredLines[[i]]$SeriousDlqin2yrs)
+}
+# results
+D9 <- data.frame(pct_delinquent, bucket)
+# str(D9)
+p9 <- ggplot(data = D9, aes(x = factor(bucket), y = pct_delinquent)) + 
+  geom_bar(stat ="identity")  + 
+  geom_hline(aes (yintercept = sample_avg), alpha = 6/10, color = 'red', linetype = 2) +
+  ggtitle("RevolvingUtilizationOfUnsecuredLines buckets")
+p9
+
+########################################
+#  NumberOfTime60.89DaysPastDueNotWorse
+########################################
+
+# generated with gen_feature_bucket_r.py
+
+# split into ten groups based on age
+num_buckets <- 10
+bucket <- seq(1, num_buckets)
+ar <- rank(cs$NumberOfTime60.89DaysPastDueNotWorse, ties.method = "first")
+decile <- cut(ar, quantile(ar, probs=0:10/10), include.lowest=TRUE, labels=FALSE)
+deciles_NumberOfTime60.89DaysPastDueNotWorse <- split(cs, decile)
+pct_delinquent <- vector("numeric", length(deciles_NumberOfTime60.89DaysPastDueNotWorse))
+for (i in seq_along(deciles_NumberOfTime60.89DaysPastDueNotWorse)){
+  pct_delinquent[i] <- mean(deciles_NumberOfTime60.89DaysPastDueNotWorse[[i]]$SeriousDlqin2yrs)
+}
+# results
+D10 <- data.frame(pct_delinquent, bucket)
+# str(D10)
+p10 <- ggplot(data = D10, aes(x = factor(bucket), y = pct_delinquent)) + 
+  geom_bar(stat ="identity")  + 
+  geom_hline(aes (yintercept = sample_avg), alpha = 6/10, color = 'red', linetype = 2) +
+  ggtitle("NumberOfTime60.89DaysPastDueNotWorse buckets")
+p10
+
+########################################
+#  NumberOfTime30.59DaysPastDueNotWorse
+########################################
+
+# generated with gen_feature_bucket_r.py
+
+# split into ten groups based on age
+num_buckets <- 10
+bucket <- seq(1, num_buckets)
+ar <- rank(cs$NumberOfTime30.59DaysPastDueNotWorse, ties.method = "first")
+decile <- cut(ar, quantile(ar, probs=0:10/10), include.lowest=TRUE, labels=FALSE)
+deciles_NumberOfTime30.59DaysPastDueNotWorse <- split(cs, decile)
+pct_delinquent <- vector("numeric", length(deciles_NumberOfTime30.59DaysPastDueNotWorse))
+for (i in seq_along(deciles_NumberOfTime30.59DaysPastDueNotWorse)){
+  pct_delinquent[i] <- mean(deciles_NumberOfTime30.59DaysPastDueNotWorse[[i]]$SeriousDlqin2yrs)
+}
+# results
+D11 <- data.frame(pct_delinquent, bucket)
+# str(D11)
+p11 <- ggplot(data = D11, aes(x = factor(bucket), y = pct_delinquent)) + 
+  geom_bar(stat ="identity")  + 
+  geom_hline(aes (yintercept = sample_avg), alpha = 6/10, color = 'red', linetype = 2) +
+  ggtitle("NumberOfTime30.59DaysPastDueNotWorse buckets")
+p11
+
+########################################
+#  NumberOfTimes90DaysLate
+########################################
+
+# generated with gen_feature_bucket_r.py
+
+# split into ten groups based on age
+num_buckets <- 10
+bucket <- seq(1, num_buckets)
+ar <- rank(cs$NumberOfTimes90DaysLate, ties.method = "first")
+decile <- cut(ar, quantile(ar, probs=0:10/10), include.lowest=TRUE, labels=FALSE)
+deciles_NumberOfTimes90DaysLate <- split(cs, decile)
+pct_delinquent <- vector("numeric", length(deciles_NumberOfTimes90DaysLate))
+for (i in seq_along(deciles_NumberOfTimes90DaysLate)){
+  pct_delinquent[i] <- mean(deciles_NumberOfTimes90DaysLate[[i]]$SeriousDlqin2yrs)
+}
+# results
+D12 <- data.frame(pct_delinquent, bucket)
+# str(D12)
+p12 <- ggplot(data = D12, aes(x = factor(bucket), y = pct_delinquent)) + 
+  geom_bar(stat ="identity")  + 
+  geom_hline(aes (yintercept = sample_avg), alpha = 6/10, color = 'red', linetype = 2) +
+  ggtitle("NumberOfTimes90DaysLate buckets")
+p12
+
+########################################
+#  ConsolidatedNumberOfDaysPastDue
+########################################
+
+# generated with gen_feature_bucket_r.py
+
+# split into ten groups based on age
+num_buckets <- 10
+bucket <- seq(1, num_buckets)
+ar <- rank(cs$ConsolidatedNumberOfDaysPastDue, ties.method = "first")
+decile <- cut(ar, quantile(ar, probs=0:10/10), include.lowest=TRUE, labels=FALSE)
+deciles_ConsolidatedNumberOfDaysPastDue <- split(cs, decile)
+pct_delinquent <- vector("numeric", length(deciles_ConsolidatedNumberOfDaysPastDue))
+for (i in seq_along(deciles_ConsolidatedNumberOfDaysPastDue)){
+  pct_delinquent[i] <- mean(deciles_ConsolidatedNumberOfDaysPastDue[[i]]$SeriousDlqin2yrs)
+}
+# results
+D13 <- data.frame(pct_delinquent, bucket)
+# str(D13)
+p13 <- ggplot(data = D13, aes(x = factor(bucket), y = pct_delinquent)) + 
+  geom_bar(stat ="identity")  + 
+  geom_hline(aes (yintercept = sample_avg), alpha = 6/10, color = 'red', linetype = 2) +
+  ggtitle("ConsolidatedNumberOfDaysPastDue buckets")
+p13
+
+# group charts into one
+png("feature_bucketed_discr.png", width=12, height=24, units="in", res=100)
+grid.arrange( p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13,  ncol = 3)
+dev.off()
+
+
+```

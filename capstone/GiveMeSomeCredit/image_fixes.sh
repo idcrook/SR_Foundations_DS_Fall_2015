@@ -25,3 +25,7 @@ convert +append cart_lift.png cart2_lift.png both_cart_lift.png
 # combine and resize ROC plots
 #convert +append ROC1a.png ROC2a.png both_ROC.png
 #convert -resize 80% both_ROC.png  both_ROC_resized.png
+
+# resize feature discrimination plot grouping
+
+convert -resize 50% feature_bucketed_discr.png feature_bucketed_discr_resized.png
