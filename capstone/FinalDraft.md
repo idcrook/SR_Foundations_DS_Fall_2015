@@ -187,7 +187,7 @@ Here is what the  `information.gain()` had calculated for feature importance on 
 
 Again there is strong correspondence with with what the classification tree reported for its important variables. 
 
-Something interesting to note is that both the Random Forest model and the CART model have a very strong predictor in `ConsolidatedNumberOfDaysPastDue` in the second iteration models, but the logistic regression model had include `RevolvingUtilizationOfUnsecuredLines` as its slightly more important variable.
+Something interesting to note is that both the Random Forest model and the CART model have a very strong predictor in `ConsolidatedNumberOfDaysPastDue` in the second iteration models, but the logistic regression model had included `RevolvingUtilizationOfUnsecuredLines` as its slightly more important variable.
 
 # Modeling 
 
@@ -239,9 +239,23 @@ In the second iteration, all three models performed at least slightly better on 
 
 The Random Forest model improving significantly, and the CART model showed the greatest performance improvement. The Random Forest performed the best overall of the three models again.
 
-### Model Validation
+##### Lift charts
 
-Each of the first and second iteration models were validated against a reserve 
+
+![Lift Curves logreg](GiveMeSomeCredit/both_logreg_lift.png "LogReg Lift Curves")
+
+![Lift Curves RF](GiveMeSomeCredit/both_rf_lift.png "RF Lift Curves")
+
+![2nd Iter Lift Curve cart](GiveMeSomeCredit/cart2_lift.png "2nd Iter Lift Curve")
+
+##### Cumulative Gain charts
+
+
+![CGain Curves logreg](GiveMeSomeCredit/both_logreg_gain.png "LogReg CGain Curve")
+
+![CGain Curves RF](GiveMeSomeCredit/both_rf_gain.png "RF CGain Curve")
+
+![2nd Iter CGain Curve cart](GiveMeSomeCredit/cart2_gain.png "2nd Iter CART CGain Curve")
 
 # Extra Credit - Submitted on Kaggle
 
