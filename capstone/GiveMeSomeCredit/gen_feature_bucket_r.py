@@ -61,7 +61,7 @@ for var in variables:
     i += 1
 
 print '# group charts into one'
-print 'png("feature_bucketed_discr.png", width=12, height=16, units="in", res=100)'
+print 'png("feature_bucketed_discr.png", width=16, height=20, units="in", res=100)'
 
 a = []
 for j in range(1, i):

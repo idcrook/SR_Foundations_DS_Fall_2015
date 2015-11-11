@@ -28,4 +28,4 @@ convert +append cart_lift.png cart2_lift.png both_cart_lift.png
 
 # resize feature discrimination plot grouping
 
-convert -resize 75% feature_bucketed_discr.png feature_bucketed_discr_resized.png
+convert -resize 60% feature_bucketed_discr.png feature_bucketed_discr_resized.png
