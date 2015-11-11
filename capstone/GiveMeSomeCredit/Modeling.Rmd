@@ -316,7 +316,7 @@ The selected decision threshold for the Random Forest model is **`r formatC(rf_s
 Calculate the performance on the test split of data from the original dataset on the respective model.
 First a helper function to display Accuracy, Sensitivity, and Specificity is created.
 
-``` {r display_accu_sens_spec helper, echo=FALSE}
+``` {r helper funcs, echo=FALSE}
 
 # helper function to display Accuracy, Sensitivity, and Specificity
 display_accu_sens_spec <- function(iperf) {
@@ -336,6 +336,22 @@ display_accu_sens_spec <- function(iperf) {
   s1
 }
 
+
+# Show Confusion Matrix
+####################
+# preds - predictions (as probability)
+# thresh - thresh to divide probability into one classs or another
+# s - string to identify
+showCM <- function (preds, thresh, s) {
+  print(paste0("Confusion matrix for ", s, " predictions at prob threshold of ", formatC(thresh, format='f', digits=3)))
+  # confusion matrix
+  pred <- ifelse(preds[, "delinquent"] > thresh, 1, 0)
+  pred <- factor(pred, levels = c(0, 1), labels = c("ok", "delinquent"))
+  cm <- confusionMatrix(pred, cs_test$SeriousDlqin2yrs, positive = "delinquent")
+  as.table(cm)
+}
+
+
 ```
 
 ### Logit (Logistic regression) model 
@@ -354,6 +370,8 @@ display_accu_sens_spec(log_reg_oos_performance[log_reg_i, ])
 
 # tested performance 
 display_accu_sens_spec(log_reg_test_performance)
+
+showCM(log_reg_test_pred_probs, log_reg_selected_prob_threshold, "log_reg")
 ```
 
 The *accuracy* is not great, but the test split data performance is similar to its expected performance.
@@ -374,6 +392,8 @@ display_accu_sens_spec(rf_oos_performance[rf_i, ])
 
 # tested performance 
 display_accu_sens_spec(rf_test_performance)
+
+showCM(rf_test_pred_probs, rf_selected_prob_threshold, "rf")
 ```
 
 The Random Forest model has a higher *accuracy* at the chosen sensitivity threshold. The performance comparison on the test slice is in the expected performance ballpark, within 1% or so.
@@ -542,10 +562,6 @@ Again, a sensistivity threshold of **`75`%** is chosen.
 cart2_sensitivity_threshold <- .75
 cart2_i <- min(which(cart2_oos_performance$sensitivity < cart2_sensitivity_threshold)) - 1
 cart2_selected_prob_threshold <- prob_thresholds[cart2_i]
-
-# confusion matrix
-pred      <- factor( ifelse(cart2_pred_probs[, "delinquent"] > cart2_selected_prob_threshold, "delinquent", "ok"))
-confusionMatrix(pred, cs_valid$SeriousDlqin2yrs)
 ```
 
 The selected decision threshold is **`r formatC(cart2_selected_prob_threshold, format='f', digits=3)`**.
@@ -567,6 +583,7 @@ The selected decision threshold is **`r formatC(log_reg2_selected_prob_threshold
 rf2_sensitivity_threshold <- .75
 rf2_i <- min(which(rf2_oos_performance$sensitivity < rf_sensitivity_threshold)) - 1
 rf2_selected_prob_threshold <- prob_thresholds[rf2_i]
+
 ```
 
 The selected decision threshold for the Random Forest model is **`r formatC(rf2_selected_prob_threshold, format='f', digits=3)`**.
@@ -589,6 +606,8 @@ display_accu_sens_spec(log_reg2_oos_performance[log_reg2_i, ])
 
 # tested performance 
 display_accu_sens_spec(log_reg2_test_performance)
+
+showCM(log_reg2_test_pred_probs, log_reg2_selected_prob_threshold, "log_reg2")
 ```
 
 The *accuracy* degrades slightly over the first iteration model, and the test split data performance is similar to its expected performance.
@@ -609,6 +628,8 @@ display_accu_sens_spec(rf2_oos_performance[rf2_i, ])
 
 # tested performance 
 display_accu_sens_spec(rf2_test_performance)
+
+showCM(rf2_test_pred_probs, rf2_selected_prob_threshold, "rf2")
 ```
 
 The Random Forest model has a higher *accuracy* at the chosen sensitivity threshold. The performance comparison on the test slice is in the expected performance ballpark, within 1% or so.
@@ -629,6 +650,8 @@ display_accu_sens_spec(cart2_oos_performance[cart2_i, ])
 
 # tested performance 
 display_accu_sens_spec(cart2_test_performance)
+
+showCM(cart2_test_pred_probs, cart2_selected_prob_threshold, "cart2")
 ```
 
 The CART model is in the running this time. The prediction performance comparison on the test slice is reasonable.
