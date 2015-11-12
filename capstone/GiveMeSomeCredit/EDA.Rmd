@@ -715,4 +715,10 @@ png("feature_bucketed_discr.png", width=16, height=20, units="in", res=100)
 grid.arrange( p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13,  ncol = 3)
 dev.off()
 
+
+# group charts into one
+png("keynote_feature_bucketed_discr.png", width=20, height=16, units="in", res=200)
+grid.arrange( p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, ncol = 4)
+dev.off()
+
 ```

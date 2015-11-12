@@ -111,6 +111,25 @@ There are `5` occurrences of `96` and `264` occurrences of `98` in each of these
 
 **ConsolidatedNumberOfDaysPastDue** [**Constructed**] - Since the three Delinquencies variables are related, it was decided to create a feature `ConsolidatedNumberOfDaysPastDue` that contained the total number of days late.  Using the assumed thresholds `[30, 60, 90]`, respectively, the feature `ConsolidatedNumberOfDaysPastDue` was created. The thinking was that, for model fitting, it could be useful to use the total number of days to represent the three variables on a linear basis.
 
+
+### Per-feature bucketing exploration
+
+Based on feedback received, the author created some charts on a per-feature basis. The charts were to see if there were trends within a particular variable towards the dependent variable. After wrestling with R for quite a while, the charts were completed.
+
+Each variable was split into equally sized buckets based on relative rank for that variable. Bucket 1 contained the 10% lowest observations for that variable, while bucket 10 contained the highest 10%.   The percentage of `SeriousDlqin2yrs`, the dependent variable, was then calculated for each bucket.  The results were then charted, shown below.  The red line is the percentage in the dataset as a whole for `SeriousDlqin2yrs`. 
+
+![Feature bucket discrimination](GiveMeSomeCredit/feature_bucketed_discr_resized.png "Feature bucket discrimination")
+
+The charts show some striking trends in the variables.
+
+- The deliquency variables all have the same marked influence in their highest bucket range.
+- `RevolvingUtilizationOfUnsecuredLines` shows an accelerating trend in its higher values.
+- `MonthlyIncome` and `age` both have their smaller value bucket start off highest,  with a consistent linear downward trend across remaining buckets.
+- `NumberOfDependents` at its upper buckets show an increasing linear trend.
+
+These charts could be used as tools to drive further feature engineering.
+
+
 ## Data cleaning techniques
 
 #### Imputing values
@@ -192,24 +211,6 @@ Again there is strong correspondence with with what the classification tree repo
 
 Something interesting to note is that both the Random Forest model and the CART model have a very strong predictor in `ConsolidatedNumberOfDaysPastDue` in the second iteration models, but the logistic regression model had included `RevolvingUtilizationOfUnsecuredLines` as its slightly more important variable.
 
-### Per-feature bucketing exploration
-
-Based on feedback received, the author created some charts on a per-feature basis. The charts were to see if any trends a particular variable made on the dependent variable were visible. After wrestling with R for a while, it was completed.
-
-Each variable was split into equally sized buckets based on relative rank for that variable.  The percentage of `SeriousDlqin2yrs`, the dependent variable, was then calculated for that bucket.  Each variable was then charted, shown below.  The red line is the percentage in the whole dataset for `SeriousDlqin2yrs`. 
-
-![Feature bucket discrimination](GiveMeSomeCredit/feature_bucketed_discr_resized.png "Feature bucket discrimination")
-
-The charts show some striking trends in the variables.
-
-- The deliquency variables all have the same marked influence in their highest bucket range.
-- `RevolvingUtilizationOfUnsecuredLines` shows an accelerating trend in its higher values.
-- `MonthlyIncome` and `age` at lower bands are higher, and gradually lower linearly all across their buckets.
-
-
-
-
-
 # Modeling 
 
 Models were built and used to evaluate among the **decision tree** (CART), **random forest**, and **logistic regression** binary classifiers.  These approaches were selected since they were the ones covered in the coursework.  Full R code with comments and many other details on the model builds and evaluation can be found in [Modeling.Rmd](GiveMeSomeCredit/Modeling.Rmd) (.html output: [Modeling.html](https://dpcrook.github.io/SR_Foundations_DS_Fall_2015/capstone/GiveMeSomeCredit/Modeling.html)). 
@@ -267,7 +268,7 @@ The Random Forest model improving significantly, and the CART model showed the g
 
 ![Lift Curves CART](GiveMeSomeCredit/both_cart_lift.png "CART Lift Curve")
 
-Noting the lift values on the right scale in the charts, the second generation lift curve was more efficient at predicting.
+Noting the lift values on the right scale in the charts, the second generation lift curve was more efficient at predicting for the CART models.
 
 ![Lift Curves logreg](GiveMeSomeCredit/both_logreg_lift.png "LogReg Lift Curves")
 
