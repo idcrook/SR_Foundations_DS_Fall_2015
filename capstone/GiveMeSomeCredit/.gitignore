@@ -1,19 +1,21 @@
 /cart2_gain.png
 /cart2_lift.png
+/cartEntry.csv
 /cart_gain.png
 /cart_lift.png
-/rf2_gain.png
-/rf2_lift.png
-/rf_gain.png
-/rf_lift.png
+/feature_bucketed_discr.png
+/keynote_feature_bucketed_discr.png
 /logreg2_gain.png
 /logreg2_lift.png
 /logreg_gain.png
 /logreg_lift.png
+/rf2_gain.png
+/rf2_lift.png
+/rfEntry.csv
+/rf_gain.png
+/rf_lift.png
 /varImp1a.png
 /varImp2a.png
-/cartEntry.csv
-/rfEntry.csv
 Data Dictionary.xls
 cs-test.csv
 cs-training.csv
