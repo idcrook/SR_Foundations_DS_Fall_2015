@@ -2,6 +2,7 @@
 ---
 Author: David Crook <david.crook@gmail.com>
 
+<!--TOC max3-->
 
 # Introduction
 
@@ -72,7 +73,7 @@ NumberOfTime30-59DaysPastDueNotWorse  |  Number of times borrower has been 30-59
 NumberOfTime60-89DaysPastDueNotWorse  |  Number of times borrower has been 60-89 days past due but no worse in the last 2 years.                                                                   |  `integer`     |
 NumberOfTimes90DaysLate               |  Number of times borrower has been 90 days or more past due.                                                                                               |  `integer`     |
 
-# Data Cleaning Details
+## Data Cleaning Details
 
 Like any other real-world data set, the data contained outliers, missing values, and other suspect details. The author has included more extensive notes, comments, and the `R` code in [EDA.Rmd](GiveMeSomeCredit/EDA.Rmd). Below, details are provided on the `cs-training` dataset.
 
@@ -158,9 +159,7 @@ Better input data can lead to better models and better results.
 
 Something that seemed missing in the datasets were borrower total assets and total liabilities.  It would have been interesting to see those variables in the dataset, especially since any loan application the author is familiar with required those data.
 
-
-
-## Feature Engineering
+# Feature Engineering
 
 ### Feature construction
 
@@ -361,9 +360,7 @@ Like Random Forests, boosting is an ensemble method in that the overall fit is p
 1. Repeat the above steps iteratively. At each iteration, a fit is made on “what is left over” with a tree, the tree is crushed, and then the new crushed tree is added into the fit.
 1. The final fit is the sum of many trees.
 
-
-
-## Footnotes
+# Footnotes
 
 <b id="footnote1">1</b> From https://www.kaggle.com/c/GiveMeSomeCredit description [↩](#afootnote1)
 
