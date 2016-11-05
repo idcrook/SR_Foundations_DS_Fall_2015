@@ -38,7 +38,7 @@ Counting both the training and test data, there are over `250,000` observations 
 
 #### Training set
 
-There is a training dataset (`cs-training.csv`) which includes historical borrowing information on `150,000` borrowers. The training set includes a value for the variable to be predicted: `SeriousDlqin2yrs`. `SeriousDlqin2yrs` is a binary variable of whether "*Person experienced 90 days past due delinquency or worse*".  In the training dataset, **6.68%** of the observations had this variable set to **`1`**. (See [EDA.html](https://dpcrook.github.io/SR_Foundations_DS_Fall_2015/capstone/GiveMeSomeCredit/EDA.html))
+There is a training dataset (`cs-training.csv`) which includes historical borrowing information on `150,000` borrowers. The training set includes a value for the variable to be predicted: `SeriousDlqin2yrs`. `SeriousDlqin2yrs` is a binary variable of whether "*Person experienced 90 days past due delinquency or worse*".  In the training dataset, **6.68%** of the observations had this variable set to **`1`**. (See [EDA.html](https://idcrook.github.io/SR_Foundations_DS_Fall_2015/capstone/GiveMeSomeCredit/EDA.html))
 
 #### Test set
 
@@ -212,7 +212,7 @@ Something interesting to note is that both the Random Forest model and the CART 
 
 # Modeling 
 
-Models were built and used to evaluate among the **decision tree** (CART), **random forest**, and **logistic regression** binary classifiers.  These approaches were selected since they were the ones covered in the coursework.  Full R code with comments and many other details on the model builds and evaluation can be found in [Modeling.Rmd](GiveMeSomeCredit/Modeling.Rmd) (.html output: [Modeling.html](https://dpcrook.github.io/SR_Foundations_DS_Fall_2015/capstone/GiveMeSomeCredit/Modeling.html)). 
+Models were built and used to evaluate among the **decision tree** (CART), **random forest**, and **logistic regression** binary classifiers.  These approaches were selected since they were the ones covered in the coursework.  Full R code with comments and many other details on the model builds and evaluation can be found in [Modeling.Rmd](GiveMeSomeCredit/Modeling.Rmd) (.html output: [Modeling.html](https://idcrook.github.io/SR_Foundations_DS_Fall_2015/capstone/GiveMeSomeCredit/Modeling.html)). 
 
 ### Data selection
 
@@ -318,7 +318,7 @@ A CART model and a Random Forest model were built.
 The Random Forest model parameters were changed to reflect a larger number of observations in the training set for the first Random Forest submission.  Even so, the RF model took multiple hours to build on the author's workstation. 
 
 The models were trained using the the independent variables grouped that was used in the second iteration above. They were trained using the *entire training dataset*. In the other models above, splits of the training data were reserved for model testing and model validation.  A small change was made to the RF model to shorten build time (`nodesize` changed from `100` to `300`), since it was running on the whole training dataset.
-Each was submitted on the kaggle site, and their results are included in [ExtraCredit.html](https://dpcrook.github.io/SR_Foundations_DS_Fall_2015/capstone/GiveMeSomeCredit/ExtraCredit.html).
+Each was submitted on the kaggle site, and their results are included in [ExtraCredit.html](https://idcrook.github.io/SR_Foundations_DS_Fall_2015/capstone/GiveMeSomeCredit/ExtraCredit.html).
 
 ### Kaggle submission results
 

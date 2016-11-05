@@ -7,7 +7,7 @@ fontsize: 12
 geometry: margin=0.6in
 ---
 
-View output [Modeling.html](https://dpcrook.github.io/SR_Foundations_DS_Fall_2015/capstone/GiveMeSomeCredit/Modeling.html).
+View output [Modeling.html](https://idcrook.github.io/SR_Foundations_DS_Fall_2015/capstone/GiveMeSomeCredit/Modeling.html).
 
 ## Setup
 
