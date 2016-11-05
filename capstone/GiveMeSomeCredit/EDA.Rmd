@@ -5,7 +5,7 @@ date: "November 5, 2015"
 output: html_document
 ---
 
-View output [EDA.html](https://dpcrook.github.io/SR_Foundations_DS_Fall_2015/capstone/GiveMeSomeCredit/EDA.html).
+View output [EDA.html](https://idcrook.github.io/SR_Foundations_DS_Fall_2015/capstone/GiveMeSomeCredit/EDA.html).
 
 ## Setup
 
